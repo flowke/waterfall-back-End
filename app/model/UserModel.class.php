@@ -23,8 +23,20 @@ class UserModel extends Model{
         return $this->insert($sql, $data);
     }
 
+    /**
+     * 登陆时候用
+     * @param  [type] $data [description]
+     * @return [type]       [description]
+     */
+
     public function getUser($data){
         $sql = "SELECT * FROM {$this->table} WHERE user_id = ? LIMIT 1";
         return $this->dbClass->getRow($sql,$data);
     }
+
+    public function getUsersList(){
+        $sql = "SELECT tile.user_id, user_name, user_icon, SUM(tile_star) AS user_star FROM tile ,user WHERE tile.user_id = user.user_id GROUP BY tile.user_id ";
+        return $this->dbClass->getAll($sql);
+    }
+
 }

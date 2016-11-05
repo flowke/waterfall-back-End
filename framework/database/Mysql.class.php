@@ -28,7 +28,7 @@ class Mysql{
      * @param  [type] $data [description]
      * @return [type]       [description]
      */
-    public function execute($sql, $data){
+    public function execute($sql, $data=null){
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute($data);
@@ -52,7 +52,7 @@ class Mysql{
      * @param  [type] $sql [description]
      * @return 返回所有记录组成的二维数组
      */
-    public function getAll($sql,$data){
+    public function getAll($sql,$data=null){
         $stmt = $this->execute($sql, $data);
         $ret = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $ret;

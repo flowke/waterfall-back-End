@@ -42,14 +42,35 @@ class Model{
         }
 
     }
+    /**
+     * 更新
+     * @param  [type] $sql  [description]
+     * @param  [type] $data [description]
+     * @return [type]       [description]
+     */
+    public function update($sql, $data){
+        try{
+            $stmt = $this->dbClass->execute($sql, $data);
+            // 返回最后一次更新所影响的行数
+            return $stmt->rowCount();
+        }catch(PDOException $e){
+            return false;
+        }
+    }
 
-    public function update(){}
-
-    public function delete(){}
+    public function delete($sql, $data){
+        try{
+            $stmt = $this->dbClass->execute($sql, $data);
+            // 返回最后一次更新所影响的行数
+            return $stmt->rowCount();
+        }catch(PDOException $e){
+            return false;
+        }
+    }
 
     public function total(){}
     /**
-	 * 分页获取信息
+	 * 获取某个数目的tile
 	 * @param $offset int 偏移量
 	 * @param $limit int 每次取记录的条数
 	 * @param $where string where条件,默认为空

@@ -1,4 +1,3 @@
-
 <?php
 // 启动类
 class Initiate{

@@ -25,7 +25,8 @@ class ShareController extends BaseController{
             return;
         }
         $tileModel = new TileModel('tile');
-        $ret = $tileModel->addTile([$title,$desc,$imgURL,$user_id,$category_id]);
-        echo json_encode(['message'=>0, 'id'=>$ret]);
+        $tile_id = $tileModel->addTile([$title,$desc,$imgURL,$user_id,$category_id]);
+
+        echo json_encode(['message'=>0, 'tile_id'=>$tile_id]);
     }
 }

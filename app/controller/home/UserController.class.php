@@ -60,4 +60,19 @@ class UserController extends BaseController {
             echo json_encode(['message'=>0]);
         }
     }
+
+    public function logoutAction(){
+        unset($_SESSION['user']);
+        // session_destroy();
+        header("Location:{$GLOBALS['config']['index']}");
+    }
+    /**
+     * 获取所有用户
+     * @return [type] [description]
+     */
+    public function getListAction(){
+        $userModel = new UserModel('user');
+        $ret = $userModel->getUsersList();
+        echo json_encode($ret);
+    }
 }
