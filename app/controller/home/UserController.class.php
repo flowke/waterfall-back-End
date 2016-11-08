@@ -1,4 +1,5 @@
 <?php
+include LIBRARY_PATH.'upload.class.php';
 
 class UserController extends BaseController {
     /**
@@ -74,5 +75,25 @@ class UserController extends BaseController {
         $userModel = new UserModel('user');
         $ret = $userModel->getUsersList();
         echo json_encode($ret);
+    }
+    /**
+     * 更改用户头像
+     * @return [type] [description]
+     */
+    public function changeMyAvatar(){
+
+        $up = new upload('avatar','public/upload');
+        $imgURL = $up->uploadFile();
+
+        if($imgURL === false){
+            echo json_encode(['message'=>2, 'desc'=>'图片保存失败']);
+            return;
+        }
+
+        $userModel = new UserModel('user');
+        $userModel->updateAvatar([$_SESSION['user']]);
+
+        echo json_encode($imgURL);
+
     }
 }

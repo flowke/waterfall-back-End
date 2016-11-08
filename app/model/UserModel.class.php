@@ -39,4 +39,9 @@ class UserModel extends Model{
         return $this->dbClass->getAll($sql);
     }
 
+    public function updateAvatar($data){
+        $sql = "UPDATE {$this->table} SET user_icon = ? WHERE user_id = ?";
+        return $this->update($sql, $data);
+    }
+
 }

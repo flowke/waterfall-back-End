@@ -40,7 +40,6 @@ class TileController extends BaseController{
         $tileModel = new TileModel('tile');
 
         $hasThumb = !empty($thumbModel->checkThumb([$tileid, $userid]));
-        echo json_encode(['row'=>$thumbModel->checkThumb([$tileid, $userid]), 'has'=>$hasThumb]);
         if(!$hasThumb && $status==1){
             $tileModel->updateStar([$tileid], 1);
             $thumbModel->addThumbRecord([$tileid, $userid]);
