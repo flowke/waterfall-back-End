@@ -294,10 +294,46 @@
 	            ev.preventDefault();
 	            PubSub.publish('initTile');
 	        }
+	        // 点击更改头像更改头像
+	
+	    }, {
+	        key: 'updateAvatar',
+	        value: function updateAvatar() {
+	            this.refs.avatarUpload.click();
+	        }
+	        // 头像file变化之后
+	
+	    }, {
+	        key: 'AvatarChange',
+	        value: function AvatarChange(ev) {
+	            var _this4 = this;
+	
+	            ev.stopPropagation();
+	            ev.preventDefault();
+	            var fileList = ev.target.files || ev.dataTransfer.files;
+	            var file = fileList[fileList.length - 1];
+	
+	            var fd = new FormData();
+	            fd.append('avatar', file);
+	            console.log(file);
+	            $.ajax({
+	                url: config.url + '?p=home&c=user&a=changeMyAvatar',
+	                type: 'POST',
+	                dataType: 'json',
+	                processData: false,
+	                contentType: false,
+	                data: fd,
+	                success: function success(data) {
+	                    _this4.setState({
+	                        imgUrl: data.url
+	                    });
+	                }
+	            });
+	        }
 	    }, {
 	        key: 'componentDidMount',
 	        value: function componentDidMount() {
-	            var _this4 = this;
+	            var _this5 = this;
 	
 	            $.ajax({
 	                url: config.url + '?p=home&c=user&a=autologin',
@@ -305,7 +341,7 @@
 	                success: function success(data) {
 	                    if (data.message === 1) {
 	                        cookie.set('user', data.user_id);
-	                        _this4.handleLogin({
+	                        _this5.handleLogin({
 	                            username: data.user_name,
 	                            userid: data.user_id,
 	                            imgUrl: data.user_icon
@@ -322,7 +358,7 @@
 	    }, {
 	        key: 'render',
 	        value: function render() {
-	            var _this5 = this;
+	            var _this6 = this;
 	
 	            return React.createElement(
 	                'div',
@@ -364,7 +400,7 @@
 	                            React.createElement(
 	                                'div',
 	                                { className: '' + _header2.default.bubleWrap, onMouseEnter: function onMouseEnter() {
-	                                        clearTimeout(_this5.timer);
+	                                        clearTimeout(_this6.timer);
 	                                    } },
 	                                React.createElement(
 	                                    'a',
@@ -373,9 +409,10 @@
 	                                ),
 	                                React.createElement(
 	                                    'a',
-	                                    { href: '#' },
+	                                    { href: '#', onClick: this.updateAvatar.bind(this) },
 	                                    '\u66F4\u6539\u5934\u50CF'
 	                                ),
+	                                React.createElement('input', { type: 'file', className: '' + _header2.default.hide, onChange: this.AvatarChange.bind(this), ref: 'avatarUpload' }),
 	                                React.createElement(
 	                                    'a',
 	                                    { onClick: function onClick() {
@@ -929,7 +966,6 @@
 	        value: function panelFadeOut() {
 	            $(this.refs.panel).removeClass(_loginPanel2.default.panelFade);
 	        }
-	
 	        /**
 	         * 表单提交
 	         */

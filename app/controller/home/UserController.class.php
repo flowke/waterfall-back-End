@@ -80,20 +80,19 @@ class UserController extends BaseController {
      * 更改用户头像
      * @return [type] [description]
      */
-    public function changeMyAvatar(){
+    public function changeMyAvatarAction(){
 
         $up = new upload('avatar','public/upload');
         $imgURL = $up->uploadFile();
-
         if($imgURL === false){
             echo json_encode(['message'=>2, 'desc'=>'图片保存失败']);
             return;
         }
 
         $userModel = new UserModel('user');
-        $userModel->updateAvatar([$_SESSION['user']]);
+        $userModel->updateAvatar([$imgURL,$_SESSION['user']]);
 
-        echo json_encode($imgURL);
+        echo json_encode(["message"=>1, "url"=>$imgURL]);
 
     }
 }
