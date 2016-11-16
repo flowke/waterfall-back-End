@@ -32,7 +32,7 @@ class ShareController extends BaseController{
             echo json_encode(['message'=>3, 'desc'=> '插入失败']);
         }else{
             $ret = $tileModel->getTileById([ $user_id, $tile_id]);
-            $ret = array_merge($ret, $tileModel->getTile([$user_id],1,20));
+            $ret = array_merge($ret, $tileModel->getTile([$user_id], 0, 'tile.tile_time', 'DESC' ,1,20));
             echo json_encode(['message'=>0, 'tile_id' => $tile_id, 'data'=>$ret]);
         }
 

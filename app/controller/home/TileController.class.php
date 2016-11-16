@@ -10,8 +10,12 @@ class TileController extends BaseController{
         $limit = $_POST['limit'];
         $fromuser = $_POST['from_user'];
 
+        $filterType = $_POST['filterType'];
+        $sortBy = $_POST['sortBy'] == 'TIME' ? 'tile.tile_time' :  'tile.tile_star';
+        $order = $_POST['order'] == 'DESC' ? 'DESC' : $_POST['order'];
+
         $tileModel = new TileModel('tile');
-        $ret = $tileModel->getTile([$fromuser],$offset,$limit);
+        $ret = $tileModel->getTile([$fromuser], $filterType, $sortBy, $order, $offset,$limit);
         echo json_encode($ret);
     }
     /**
@@ -23,8 +27,14 @@ class TileController extends BaseController{
         $fromuser = $_POST['from_user'];
         $offset = $_POST['offset'];
         $limit = $_POST['limit'];
+
+        $filterType = $_POST['filterType'] == 0 ? 1 : "tile.category_id = {$_POST['filterType']}";
+        $sortBy = $_POST['sortBy'] == 'TIME' ? 'tile.tile_time' :  'tile.tile_star';
+        $order = $_POST['order'] == 'DESC' ? 'DESC' : $_POST['order'];
+
+
         $tileModel = new TileModel('tile');
-        $ret = $tileModel->getUserTile([$fromuser, $watchuser],$offset,$limit);
+        $ret = $tileModel->getUserTile([$fromuser, $watchuser], $filterType, $sortBy, $order,$offset,$limit);
         echo json_encode($ret);
     }
     /**

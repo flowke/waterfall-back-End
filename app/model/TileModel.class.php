@@ -8,14 +8,20 @@ class TileModel extends Model{
         return $this->insert($sql,$data);
     }
 
-    public function getTile($data, $offset=0, $limit=10){
-        $sql = "SELECT tile.tile_id, tile_title, tile_desc, tile_cover, tile_star, user.user_id, user_name, user_star, category_name, thumb_status FROM tile left join user ON tile.user_id = user.user_id LEFT JOIN category on tile.category_id = category.category_id left join thumb on thumb.user_id = ? AND thumb.tile_id = tile.tile_id ORDER BY tile_time DESC LIMIT {$offset}, {$limit}";
+    public function getTile($data, $filterType, $sortBy, $order, $offset=0, $limit=10){
+
+        $filterType = $filterType==0 ? '' : "WHERE tile.category_id = {$filterType}";
+        $orderStr = "{$sortBy} {$order}";
+
+        $sql = "SELECT tile.tile_id, tile_title, tile_desc, tile_cover, tile_star, user.user_id, user_name, user_star, category_name, thumb_status FROM tile left join user ON tile.user_id = user.user_id LEFT JOIN category on tile.category_id = category.category_id left join thumb on thumb.user_id = ? AND thumb.tile_id = tile.tile_id {$filterType} ORDER BY {$orderStr} LIMIT {$offset}, {$limit}";
         return $this->dbClass->getAll($sql,$data);
     }
 
-    public function getUserTile($data, $offset=0, $limit=10){
+    public function getUserTile($data, $filterType, $sortBy, $order, $offset=0, $limit=10){
 
-        $sql = "SELECT tile.tile_id, tile_title, tile_desc, tile_cover, tile_star, user.user_id, user_name, user_star, category_name, thumb_status FROM tile left join user ON tile.user_id = user.user_id LEFT JOIN category on tile.category_id = category.category_id left join thumb on thumb.user_id = ? AND thumb.tile_id = tile.tile_id WHERE tile.user_id = ? ORDER BY tile_time DESC LIMIT {$offset}, {$limit}";
+        $orderStr = "{$sortBy} {$order}";
+
+        $sql = "SELECT tile.tile_id, tile_title, tile_desc, tile_cover, tile_star, user.user_id, user_name, user_star, category_name, thumb_status FROM tile left join user ON tile.user_id = user.user_id LEFT JOIN category on tile.category_id = category.category_id left join thumb on thumb.user_id = ? AND thumb.tile_id = tile.tile_id WHERE tile.user_id = ? AND $filterType ORDER BY {$orderStr} LIMIT {$offset}, {$limit}";
 
         return $this->dbClass->getAll($sql,$data);
     }

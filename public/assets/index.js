@@ -300,7 +300,7 @@
 	    }, {
 	        key: 'homeRefresh',
 	        value: function homeRefresh(ev) {
-	            if (ev.target !== ev.currentTarget) {
+	            if (typeof ev !== 'string' && ev.target !== ev.currentTarget) {
 	                return;
 	            }
 	            ev.stopPropagation();
@@ -389,10 +389,10 @@
 	            var rawText = data.rawText,
 	                endText = data.endText;
 	            var creazyLetter = new _textTransform2.default(this.refs.shareBtn);
-	            creazyLetter.letterMutting(this.refs.shareBtn, endText, 5);
+	            creazyLetter.letterMutting(this.refs.shareBtn, endText, 4);
 	            clearTimeout(this.letterTimer);
 	            this.letterTimer = setTimeout(function () {
-	                creazyLetter.letterMutting(_this6.refs.shareBtn, rawText, 5);
+	                creazyLetter.letterMutting(_this6.refs.shareBtn, rawText, 4);
 	            }, 1600);
 	        }
 	    }, {
@@ -750,11 +750,15 @@
 	    function Content(props) {
 	        _classCallCheck(this, Content);
 	
+	        /*
+	        * typeList 请求分类数据
+	         */
 	        var _this = _possibleConstructorReturn(this, (Content.__proto__ || Object.getPrototypeOf(Content)).call(this, props));
 	
 	        _this.state = {
 	            tileList: null,
-	            data: {}
+	            data: {},
+	            typeList: null
 	        };
 	        // 修改this绑定
 	        _this.userTile = _this.userTile.bind(_this);
@@ -765,6 +769,14 @@
 	        // 控制是否可以发起请求
 	        // 它在发起一次请求后变成false，state更新后变成true
 	        _this.canReq = true;
+	        // 用于判断向什么角色发起请求，
+	        // all代表向全局发起请求，
+	        // 非all向user发起请求，值代表userid， watch_user
+	        _this.filterRole = 'all';
+	        // category_id, 0 代表全部
+	        _this.filterType = 0;
+	        _this.sortBy = 'TIME';
+	        _this.order = 'DESC';
 	        return _this;
 	    }
 	    // 这是一个初始化请求
@@ -773,21 +785,31 @@
 	
 	    _createClass(Content, [{
 	        key: 'initTile',
-	        value: function initTile() {
+	        value: function initTile(msg) {
 	            var _this2 = this;
+	
+	            var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 	
 	            // ajax的请求数据
 	            this.ajaxData = {
 	                offset: 0,
 	                limit: 20,
-	                from_user: cookie.get('user') || 0
+	                from_user: cookie.get('user') || 0,
+	                filterType: args.filterType || this.filterType,
+	                sortBy: args.sortBy || this.sortBy,
+	                order: args.order || this.order
 	            };
 	            // 路由信息
 	            this.queryString = 'p=home&c=tile&a=getTile';
 	            this.canReq = true;
+	            this.filterRole = 'all';
+	
 	            PubSub.publish('progressLoading');
 	            this.requestTile(this.ajaxData, function (data) {
 	                PubSub.publish('progressLoadingDone');
+	                if (data.length == 0) {
+	                    PubSub.publish('globalHint', { rawText: 'Sharing', endText: 'Nothing at all' });
+	                }
 	                data = data.map(function (elt, i) {
 	                    if (elt.thumb_status != 1) {
 	                        elt.thumb_status = 0;
@@ -819,15 +841,26 @@
 	                offset: 0,
 	                limit: 20,
 	                watch_user: args.watch_user,
-	                from_user: args.from_user
+	                from_user: cookie.get('user'),
+	                filterType: args.filterType || this.filterType,
+	                sortBy: args.sortBy || this.sortBy,
+	                order: args.order || this.order
 	            };
+	
 	            this.canReq = true;
+	            this.filterRole = args.watch_user;
+	
 	            // 重置queryString
 	            this.queryString = 'p=home&c=tile&a=userTile';
 	            PubSub.publish('progressLoading');
 	            this.requestTile(this.ajaxData, function (data) {
+	                PubSub.publish('progressLoadingDone');
+	
+	                if (data.length == 0) {
+	                    PubSub.publish('globalHint', { rawText: 'Sharing', endText: 'Nothing at all' });
+	                }
+	
 	                data = data.map(function (elt, i) {
-	                    PubSub.publish('progressLoadingDone');
 	                    if (elt.thumb_status != 1) {
 	                        elt.thumb_status = 0;
 	                    };
@@ -896,6 +929,10 @@
 	            var _this5 = this;
 	
 	            this.queryString = 'p=home&c=tile&a=getTile';
+	
+	            $(this.refs.timeArrow).addClass(_content2.default.redColor);
+	            $(this.refs.thumbArrow).removeClass(_content2.default.redColor);
+	
 	            data = data.map(function (elt, i) {
 	                if (elt.thumb_status != 1) {
 	                    elt.thumb_status = 0;
@@ -930,6 +967,117 @@
 	                }
 	            });
 	        }
+	        /* handler for aside */
+	
+	    }, {
+	        key: 'typeShow',
+	        value: function typeShow(ev) {
+	            // if(ev.target !== ev.currentTarget){ return };
+	
+	            $(this.refs.typeList).toggleClass(_content2.default.hide);
+	        }
+	    }, {
+	        key: 'listClick',
+	        value: function listClick(ev) {
+	            if (this.refs.typeName.innerText.toUpperCase() === ev.target.innerText.toUpperCase()) {
+	                return;
+	            };
+	            this.refs.typeName.innerText = ev.target.innerText;
+	            this.filterType = $(ev.target).data('categoryid');
+	            if (this.filterRole === 'all') {
+	                PubSub.publish('initTile', {
+	                    filterType: this.filterType,
+	                    sortBy: this.sortBy,
+	                    order: this.order
+	                });
+	            } else {
+	                PubSub.publish('userTile', {
+	                    watch_user: this.filterRole,
+	                    filterType: this.filterType,
+	                    sortBy: this.sortBy,
+	                    order: this.order
+	                });
+	            }
+	        }
+	    }, {
+	        key: 'orderThumbs',
+	        value: function orderThumbs(ev) {
+	            ev.stopPropagation();
+	            ev.preventDefault();
+	
+	            if (ev.target.tagName.toUpperCase() === "I") {
+	                $(this.refs.thumbArrow).toggleClass('icon-arrow-up2');
+	                if (this.refs.thumbArrow.onOff = !this.refs.thumbArrow.onOff) {
+	                    this.order = 'ASC';
+	                } else {
+	                    this.order = 'DESC';
+	                }
+	                this.refs.thumbArrow.order = this.order;
+	            } else if (this.sortBy === 'THUMBS') {
+	                return;
+	            }
+	
+	            $(this.refs.thumbArrow).addClass(_content2.default.redColor);
+	            $(this.refs.timeArrow).removeClass(_content2.default.redColor);
+	
+	            this.sortBy = 'THUMBS';
+	
+	            if (this.filterRole === 'all') {
+	                PubSub.publish('initTile', {
+	                    filterType: this.filterType,
+	                    sortBy: this.sortBy,
+	                    order: this.refs.thumbArrow.order
+	                });
+	            } else {
+	                PubSub.publish('userTile', {
+	                    watch_user: this.filterRole,
+	                    filterType: this.filterType,
+	                    sortBy: this.sortBy,
+	                    order: this.refs.thumbArrow.order
+	                });
+	            }
+	        }
+	    }, {
+	        key: 'orderTime',
+	        value: function orderTime(ev) {
+	            ev.stopPropagation();
+	            ev.preventDefault();
+	
+	            if (ev.target.tagName.toUpperCase() === "I") {
+	                $(this.refs.timeArrow).toggleClass('icon-arrow-up2');
+	                if (this.refs.timeArrow.onOff = !this.refs.timeArrow.onOff) {
+	                    this.order = 'ASC';
+	                } else {
+	                    this.order = 'DESC';
+	                }
+	                this.refs.timeArrow.order = this.order;
+	            } else if (this.sortBy === 'TIME') {
+	                return;
+	            }
+	
+	            $(this.refs.timeArrow).addClass(_content2.default.redColor);
+	            $(this.refs.thumbArrow).removeClass(_content2.default.redColor);
+	
+	            this.sortBy = 'TIME';
+	
+	            if (this.filterRole === 'all') {
+	                PubSub.publish('initTile', {
+	                    filterType: this.filterType,
+	                    sortBy: this.sortBy,
+	                    order: this.refs.timeArrow.order
+	                });
+	            } else {
+	                PubSub.publish('userTile', {
+	                    watch_user: this.filterRole,
+	                    filterType: this.filterType,
+	                    sortBy: this.sortBy,
+	                    order: this.refs.timeArrow.order
+	                });
+	            }
+	        }
+	
+	        /* end handler for aside */
+	
 	    }, {
 	        key: 'wookmarkLayout',
 	        value: function wookmarkLayout() {
@@ -960,7 +1108,16 @@
 	        value: function toggleWelcome() {
 	            $(this.refs.content).toggleClass(_content2.default.notLogin);
 	        }
-	
+	    }, {
+	        key: 'toggleSpread',
+	        value: function toggleSpread(ev) {
+	            ev.stopPropagation();
+	            ev.preventDefault();
+	            this.wookmarkLayout();
+	            $(this.refs.spreadMenu).toggleClass(_content2.default.MenuSpreaded);
+	            $(this.refs.leftWrap).toggleClass(_content2.default.leftSpread);
+	            $(this.refs.rightWrap).toggleClass(_content2.default.rightSpread);
+	        }
 	        /**
 	         * react的生命周期函数
 	         */
@@ -968,6 +1125,8 @@
 	    }, {
 	        key: 'componentDidMount',
 	        value: function componentDidMount() {
+	            var _this6 = this;
+	
 	            $(window).on('scroll', this.handlerScroll);
 	            // 订阅订阅tile请求
 	            PubSub.subscribe('userTile', this.userTile);
@@ -975,6 +1134,29 @@
 	            PubSub.subscribe('toggleWelcome', this.toggleWelcome);
 	            PubSub.subscribe('updateTile', this.updateTile);
 	            this.initTile();
+	
+	            //请求分类信息
+	            $.ajax({
+	                url: config.url + '?h=home&c=category&a=getCategory',
+	                dataType: 'json',
+	                success: function success(data) {
+	                    data = data.map(function (elt, indx) {
+	                        return React.createElement(
+	                            'li',
+	                            { key: indx, 'data-categoryid': elt.category_id, onClick: _this6.listClick.bind(_this6) },
+	                            elt.category_name
+	                        );
+	                    });
+	                    data.unshift(React.createElement(
+	                        'li',
+	                        { key: Math.random().toString().slice(2), 'data-categoryid': 0, onClick: _this6.listClick.bind(_this6) },
+	                        'All'
+	                    ));
+	                    _this6.setState({ typeList: data });
+	                }
+	            });
+	
+	            $(this.refs.timeArrow).addClass(_content2.default.redColor);
 	        }
 	    }, {
 	        key: 'componentDidUpdate',
@@ -989,7 +1171,7 @@
 	                { className: '' + _content2.default.contentBox, ref: 'content' },
 	                React.createElement(
 	                    'div',
-	                    { className: '' + _content2.default["g-left"] },
+	                    { className: '' + _content2.default["g-left"], ref: 'leftWrap' },
 	                    React.createElement(
 	                        'div',
 	                        { className: '' + _content2.default.layoutWrap },
@@ -1002,11 +1184,10 @@
 	                ),
 	                React.createElement(
 	                    'div',
-	                    { className: '' + _content2.default["g-right"] },
+	                    { className: '' + _content2.default["g-right"], ref: 'rightWrap' },
 	                    React.createElement(
 	                        'aside',
 	                        { className: '' + _content2.default.aside },
-	                        React.createElement('span', { className: '' + _content2.default.spreadMenu }),
 	                        React.createElement(
 	                            'h3',
 	                            null,
@@ -1017,56 +1198,44 @@
 	                            { className: '' + _content2.default.sortElement },
 	                            React.createElement(
 	                                'li',
-	                                null,
+	                                { onClick: this.orderThumbs.bind(this) },
 	                                React.createElement(
 	                                    'span',
 	                                    null,
 	                                    'THUMBS'
 	                                ),
 	                                ' ',
-	                                React.createElement('i', null)
+	                                React.createElement('i', { className: 'icon-arrow-down2', ref: 'thumbArrow' })
 	                            ),
 	                            React.createElement(
 	                                'li',
-	                                null,
+	                                { onClick: this.typeShow.bind(this) },
+	                                'TYPE: ',
 	                                React.createElement(
 	                                    'span',
-	                                    null,
-	                                    'TYPE'
+	                                    { ref: 'typeName' },
+	                                    'All'
 	                                ),
 	                                React.createElement(
 	                                    'ul',
-	                                    { className: '' + _content2.default.typeList },
-	                                    React.createElement(
-	                                        'li',
-	                                        null,
-	                                        'dfjksk'
-	                                    ),
-	                                    React.createElement(
-	                                        'li',
-	                                        null,
-	                                        'dfjksk'
-	                                    ),
-	                                    React.createElement(
-	                                        'li',
-	                                        null,
-	                                        'dfjksk'
-	                                    )
+	                                    { className: _content2.default.typeList + ' ' + _content2.default.hide, ref: 'typeList' },
+	                                    this.state.typeList
 	                                )
 	                            ),
 	                            React.createElement(
 	                                'li',
-	                                null,
+	                                { onClick: this.orderTime.bind(this) },
 	                                React.createElement(
 	                                    'span',
 	                                    null,
 	                                    'TIME'
 	                                ),
-	                                React.createElement('i', null)
+	                                React.createElement('i', { className: 'icon-arrow-down2', ref: 'timeArrow' })
 	                            )
 	                        )
 	                    )
-	                )
+	                ),
+	                React.createElement('span', { ref: 'spreadMenu', className: '' + _content2.default.spreadMenu, onClick: this.toggleSpread.bind(this) })
 	            );
 	        }
 	    }]);
@@ -1294,7 +1463,7 @@
 /***/ function(module, exports) {
 
 	// removed by extract-text-webpack-plugin
-	module.exports = {"contentBox":"contentBox_3s92cNA0wt","layoutWrap":"layoutWrap_3lsSYpAvN0","g-left":"g-left_1irHrfbe1e","g-right":"g-right_11Go81irgz","aside":"aside_3_7Tv4TGTN","sortElement":"sortElement_3Z9qFB1fgb","typeList":"typeList_1hESDwKzKf","notLogin":"notLogin_373DqV1sgo"};
+	module.exports = {"contentBox":"contentBox_3s92cNA0wt","layoutWrap":"layoutWrap_3lsSYpAvN0","g-left":"g-left_1irHrfbe1e","leftSpread":"leftSpread_EBarCVtHhA","g-right":"g-right_11Go81irgz","rightSpread":"rightSpread_1-TiCHl_lg","aside":"aside_3_7Tv4TGTN","sortElement":"sortElement_3Z9qFB1fgb","typeList":"typeList_1hESDwKzKf","spreadMenu":"spreadMenu_3E_-yAmX4z","MenuSpreaded":"MenuSpreaded_cp-rt1CFqo","notLogin":"notLogin_373DqV1sgo","hide":"hide_cqspzJvttZ","redColor":"redColor_1meIouxnOg"};
 
 /***/ },
 /* 14 */
@@ -3668,6 +3837,9 @@
 	            PubSub.publish('closePanelWrap');
 	            // 用户入口的关闭
 	            PubSub.publish('closeUserEntry');
+	            if (elems.panel.onOff = !elems.panel.onOff) {
+	                this.reqUser(null, this.updateList);
+	            }
 	        }
 	    }, {
 	        key: 'watchMine',
@@ -3726,8 +3898,17 @@
 	        value: function userListRefresh(ev) {
 	            ev.stopPropagation();
 	            ev.preventDefault();
-	            $(this.refs.loopIcon).addClass('f-refreshing');
+	            // $(this.refs.loopIcon).addClass('f-refreshing');
 	            this.reqUser(null, this.updateList);
+	        }
+	    }, {
+	        key: 'homeRefresh',
+	        value: function homeRefresh() {
+	            PubSub.publish('initTile', {
+	                filterType: 0,
+	                sortBy: 'TIME',
+	                order: 'DESC'
+	            });
 	        }
 	
 	        // 处理user的请求
@@ -3773,7 +3954,16 @@
 	                React.createElement(
 	                    'div',
 	                    { className: '' + _userList2.default.listWrap, ref: 'listWrap' },
-	                    React.createElement('i', { className: 'icon-loop2 ' + _userList2.default.refresh, onClick: this.userListRefresh, ref: 'loopIcon' }),
+	                    React.createElement(
+	                        'a',
+	                        { href: 'http://www.flowke.com', className: '' + _userList2.default.home },
+	                        React.createElement('i', { className: 'icon-home', ref: 'loopIcon' })
+	                    ),
+	                    React.createElement(
+	                        'h3',
+	                        { className: '' + _userList2.default.listTitle },
+	                        'Users Whome Shared'
+	                    ),
 	                    React.createElement(
 	                        'ul',
 	                        null,
@@ -3795,7 +3985,7 @@
 /***/ function(module, exports) {
 
 	// removed by extract-text-webpack-plugin
-	module.exports = {"panel":"panel_2gNOsLDbT1","menu":"menu_17x2Wl6iEN","line_1":"line_1_3xEmjFAoOm","line_2":"line_2_2prxqY_I3_","line_3":"line_3_2rwZrmYMME","menu-in":"menu-in_3G2DISoNE6","reformLine1":"reformLine1_31ti3-OIax","reformLine2":"reformLine2_34uN3WjDfy","reformLine3":"reformLine3_KMjqrpAC-I","refresh":"refresh_1OrQ57TBJM","mask":"mask_2BgDS0F_kJ","panelShow":"panelShow_mWFph1K3jb","maskShow":"maskShow_3zFytcwy3T","listWrap":"listWrap_2PmI_xCLSf","listShow":"listShow_GYy9qD0vM4","starWrap":"starWrap_1vS3N8yBvD","starNum":"starNum_150aaQMUJB"};
+	module.exports = {"panel":"panel_2gNOsLDbT1","menu":"menu_17x2Wl6iEN","line_1":"line_1_3xEmjFAoOm","line_2":"line_2_2prxqY_I3_","line_3":"line_3_2rwZrmYMME","menu-in":"menu-in_3G2DISoNE6","reformLine1":"reformLine1_31ti3-OIax","reformLine2":"reformLine2_34uN3WjDfy","reformLine3":"reformLine3_KMjqrpAC-I","home":"home_2Zzc7EOUlG","mask":"mask_2BgDS0F_kJ","panelShow":"panelShow_mWFph1K3jb","maskShow":"maskShow_3zFytcwy3T","listWrap":"listWrap_2PmI_xCLSf","listShow":"listShow_GYy9qD0vM4","starWrap":"starWrap_1vS3N8yBvD","starNum":"starNum_150aaQMUJB","listTitle":"listTitle_2R9_soBmgw"};
 
 /***/ },
 /* 30 */
@@ -3832,7 +4022,7 @@
 	
 	
 	// module
-	exports.push([module.id, "/* css reset */\nhtml,body,h1,h2,h3,h4,h5,h6,div,dl,dt,dd,ul,ol,li,p,blockquote,pre,hr,figure,table,caption,th,td,form,fieldset,legend,input,button,textarea,menu{margin:0;padding:0;}\nheader,footer,section,article,aside,nav,hgroup,address,figure,figcaption,menu,details{display:block;}\ntable{border-collapse:collapse;border-spacing:0;}\ncaption,th{text-align:left;font-weight:normal;}\nhtml,body,fieldset,img,iframe,abbr{border:0;}\ni,cite,em,var,address,dfn{font-style:normal;}\n[hidefocus],summary{outline:0;}\nli{list-style:none;}\nh1,h2,h3,h4,h5,h6,small{font-size:100%;}\nsup,sub{font-size:83%;}\npre,code,kbd,samp{font-family:inherit;}\nq:before,q:after{content:none;}\ntextarea{overflow:auto;resize:none;}\nlabel,summary{cursor:default;}\na,button{cursor:pointer;}\nh1,h2,h3,h4,h5,h6,em,strong,b{font-weight:normal;}\ndel,ins,u,s,a,a:hover{text-decoration:none;}\nbody,textarea,input,button,select,keygen,legend{font:14px/1.14 \"Microsoft YaHei\", arial, simsun; color:#333; outline:0;}\nbody{background:#fff; font-size: 14px;}\nimg{user-select:none;}\na,a:hover{color:#333;}\n/* all will be global */\n\n.f-clear:after{content:\"\";display:block;clear:both;}\n.f-clear{*zoom:1}\n\n.f-inlineBlock{ display: inline-block; *zoom:1; *display: inline; }\n.f-hide{display: none;}\ni.f-refreshing{\n    animation: rotate 2s linear infinite;\n}\n.f-blingbling{ animation: blingbling .6s 6 alternate; }\n\n@keyframes blingbling {\n    from{box-shadow:0 4px 5px rgba(255, 0, 0, 0);}\n    to{box-shadow: 0 0 15px #fd0202;}\n}\n@keyframes rotate{\n    from{transform: rotate(0);}\n    to{transform: rotate(1turn);}\n}\n\n\n@keyframes globalBubble{\n    from{ bottom: 100%; }\n    20%{ bottom: 30%; }\n    50%{ bottom: 30%; }\n    to{ bottom: 100%; }\n}\n\n/* fontface */\n\ni{font-family: 'icomoon';}\n@font-face {\n  font-family: 'icomoon';\n  src:  url('/public/assets/icomoon.eot?ekdlp2');\n  src:  url('/public/assets/icomoon.eot?ekdlp2#iefix') format('embedded-opentype'),\n    url('/public/assets/icomoon.ttf?ekdlp2') format('truetype'),\n    url('/public/assets/icomoon.woff?ekdlp2') format('woff'),\n    url('/public/assets/icomoon.svg?ekdlp2#icomoon') format('svg');\n  font-weight: normal;\n  font-style: normal;\n}\n.icon-user:before {\n  content: \"\\E900\";\n}\n.icon-heart1:before {\n  content: \"\\E901\";\n}\n.icon-heart2:before {\n  content: \"\\E902\";\n}\n.icon-marker:before {\n  content: \"\\E903\";\n}\n.icon-link:before {\n  content: \"\\E005\";\n}\n.icon-cross:before {\n  content: \"\\E117\";\n}\n.icon-location:before {\n  content: \"\\E947\";\n}\n.icon-loop2:before {\n  content: \"\\EA2E\";\n}\n/* end of fontface */\n\n/* unit */\n.u-btn{ cursor: pointer; -webkit-user-select: none;}\n.u-bubbleHint{\n    position: absolute; top: -88%; left: -30px; font-size: 10px; padding: 0 5px; border-radius: 4px; background: #fc8282; box-shadow: 0 0 4px rgba(255, 127, 110, 0.49); text-align: center; color: #fff; font-weight: normal; white-space:nowrap;}\n", ""]);
+	exports.push([module.id, "/* css reset */\nhtml,body,h1,h2,h3,h4,h5,h6,div,dl,dt,dd,ul,ol,li,p,blockquote,pre,hr,figure,table,caption,th,td,form,fieldset,legend,input,button,textarea,menu{margin:0;padding:0;}\nheader,footer,section,article,aside,nav,hgroup,address,figure,figcaption,menu,details{display:block;}\ntable{border-collapse:collapse;border-spacing:0;}\ncaption,th{text-align:left;font-weight:normal;}\nhtml,body,fieldset,img,iframe,abbr{border:0;}\ni,cite,em,var,address,dfn{font-style:normal;}\n[hidefocus],summary{outline:0;}\nli{list-style:none;}\nh1,h2,h3,h4,h5,h6,small{font-size:100%;}\nsup,sub{font-size:83%;}\npre,code,kbd,samp{font-family:inherit;}\nq:before,q:after{content:none;}\ntextarea{overflow:auto;resize:none;}\nlabel,summary{cursor:default;}\na,button{cursor:pointer;}\nh1,h2,h3,h4,h5,h6,em,strong,b{font-weight:normal;}\ndel,ins,u,s,a,a:hover{text-decoration:none;}\nbody,textarea,input,button,select,keygen,legend{font:14px/1.14 \"Microsoft YaHei\", arial, simsun; color:#333; outline:0;}\nbody{background:#fff; font-size: 14px;}\nimg{user-select:none;}\na,a:hover{color:#333;}\n/* all will be global */\n\n.f-clear:after{content:\"\";display:block;clear:both;}\n.f-clear{*zoom:1}\n\n.f-inlineBlock{ display: inline-block; *zoom:1; *display: inline; }\n.f-hide{display: none;}\ni.f-refreshing{\n    animation: rotate 2s linear infinite;\n}\n.f-blingbling{ animation: blingbling .6s 6 alternate; }\n\n@keyframes blingbling {\n    from{box-shadow:0 4px 5px rgba(255, 0, 0, 0);}\n    to{box-shadow: 0 0 15px #fd0202;}\n}\n@keyframes rotate{\n    from{transform: rotate(0);}\n    to{transform: rotate(1turn);}\n}\n\n\n@keyframes globalBubble{\n    from{ bottom: 100%; }\n    20%{ bottom: 30%; }\n    50%{ bottom: 30%; }\n    to{ bottom: 100%; }\n}\n\n/* fontface */\n\ni{font-family: 'icomoon';}\n@font-face {\n  font-family: 'icomoon';\n  src:  url('/public/assets/icomoon.eot?687xqw');\n  src:  url('/public/assets/icomoon.eot?687xqw#iefix') format('embedded-opentype'),\n    url('/public/assets/icomoon.ttf?687xqw') format('truetype'),\n    url('/public/assets/icomoon.woff?687xqw') format('woff'),\n    url('/public/assets/icomoon.svg?687xqw#icomoon') format('svg');\n  font-weight: normal;\n  font-style: normal;\n}\n.icon-user:before {\n  content: \"\\E900\";\n}\n.icon-heart1:before {\n  content: \"\\E901\";\n}\n.icon-heart2:before {\n  content: \"\\E902\";\n}\n.icon-marker:before {\n  content: \"\\E903\";\n}\n.icon-link:before {\n  content: \"\\E005\";\n}\n.icon-cross:before {\n  content: \"\\E117\";\n}\n.icon-location:before {\n  content: \"\\E947\";\n}\n.icon-loop2:before {\n  content: \"\\EA2E\";\n}\n.icon-home:before {\n  content: \"\\E904\";\n}\n\n.icon-arrow-down2:before {\n  content: \"\\EA3E\";\n}\n.icon-arrow-up2:before {\n  content: \"\\EA3A\";\n}\n/* end of fontface */\n\n/* unit */\n.u-btn{ cursor: pointer; -webkit-user-select: none;}\n.u-bubbleHint{\n    position: absolute; top: -88%; left: -30px; font-size: 10px; padding: 0 5px; border-radius: 4px; background: #fc8282; box-shadow: 0 0 4px rgba(255, 127, 110, 0.49); text-align: center; color: #fff; font-weight: normal; white-space:nowrap;}\n", ""]);
 	
 	// exports
 

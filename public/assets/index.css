@@ -263,6 +263,9 @@
 .contentBox_3s92cNA0wt ul {
   position: relative;
 }
+.contentBox_3s92cNA0wt ul > li {
+  transition: 1s;
+}
 .contentBox_3s92cNA0wt .layoutWrap_3lsSYpAvN0 {
   margin: auto;
   width: 80%;
@@ -270,6 +273,11 @@
 }
 /* g */
 .g-left_1irHrfbe1e {
+  margin-right: 0;
+  position: relative;
+  transition: marginRight 1s;
+}
+.leftSpread_EBarCVtHhA {
   margin-right: 280px;
 }
 .g-right_11Go81irgz {
@@ -277,18 +285,33 @@
   right: 0;
   top: 58px;
   bottom: 0;
-  width: 280px;
+  width: 0px;
   border-left: 1px solid #e8e1e1;
   box-sizing: border-box;
+  overflow: hidden;
+  transition: width 1s;
+  background: #fff;
+}
+.rightSpread_1-TiCHl_lg {
+  width: 280px;
 }
 /*end g */
 .aside_3_7Tv4TGTN {
   width: 200px;
   margin: auto;
-  padding-top: 30%;
+  padding-top: 230px;
 }
 .aside_3_7Tv4TGTN h3 {
   font-weight: bold;
+}
+.aside_3_7Tv4TGTN i {
+  position: absolute;
+  right: 10px;
+  top: 0;
+  height: 35px;
+  width: 60px;
+  line-height: 35px;
+  cursor: pointer;
 }
 .sortElement_3Z9qFB1fgb {
   margin-top: 10px;
@@ -303,21 +326,42 @@
   border-bottom: 1px solid #e8e1e1;
 }
 .sortElement_3Z9qFB1fgb li {
+  position: relative;
   cursor: default;
+  user-select: none;
 }
 .typeList_1hESDwKzKf {
-  display: none;
-  font-size: 12px;
-  text-indent: 4em;
+  font-size: 14px;
+  text-indent: 3em;
   color: #87888a;
-  line-height: 16px;
+  line-height: 20px;
+  padding-bottom: 8px;
 }
 .typeList_1hESDwKzKf li:hover {
-  padding-left: 10px;
+  padding-left: 5px;
+}
+.spreadMenu_3E_-yAmX4z {
+  position: fixed;
+  top: 230px;
+  right: 30px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #fd0202;
+  transition: right 1s;
+}
+.MenuSpreaded_cp-rt1CFqo {
+  right: 265px;
 }
 /* 通用样式 */
 .notLogin_373DqV1sgo {
   margin-top: 218px;
+}
+.hide_cqspzJvttZ {
+  display: none;
+}
+.redColor_1meIouxnOg {
+  color: #fd0202;
 }
 /* hintPanel */
 .hintPanel_1_Eqxw3WzR {
@@ -784,13 +828,17 @@
   background: #fd0202 ;
 }
 /* end of menu */
-i.refresh_1OrQ57TBJM {
+.home_2Zzc7EOUlG {
   position: absolute;
   right: 20px;
   top: 0px;
   padding: 20px;
   color: #808080;
   cursor: pointer;
+  color: #333;
+}
+.home_2Zzc7EOUlG i {
+  font-size: 20px;
 }
 .mask_2BgDS0F_kJ {
   position: fixed;
@@ -867,6 +915,13 @@ i.refresh_1OrQ57TBJM {
 .listWrap_2PmI_xCLSf .starNum_150aaQMUJB {
   font-size: 20px;
   line-height: 20px;
+}
+.listWrap_2PmI_xCLSf h3.listTitle_2R9_soBmgw {
+  font-size: 18px;
+  color: #606060;
+  line-height: 30px;
+  text-indent: 28px;
+  margin-bottom: 20px;
 }
 
 /*# sourceMappingURL=index.css.map*/
