@@ -52,9 +52,25 @@
 	
 	var _header2 = _interopRequireDefault(_header);
 	
-	var _content = __webpack_require__(15);
+	var _content = __webpack_require__(10);
 	
 	var _content2 = _interopRequireDefault(_content);
+	
+	var _welcomePanel = __webpack_require__(21);
+	
+	var _welcomePanel2 = _interopRequireDefault(_welcomePanel);
+	
+	var _shareingPanel = __webpack_require__(23);
+	
+	var _shareingPanel2 = _interopRequireDefault(_shareingPanel);
+	
+	var _userEntry = __webpack_require__(26);
+	
+	var _userEntry2 = _interopRequireDefault(_userEntry);
+	
+	var _userList = __webpack_require__(28);
+	
+	var _userList2 = _interopRequireDefault(_userList);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -64,8 +80,7 @@
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	__webpack_require__(26);
-	__webpack_require__(34);
+	__webpack_require__(30);
 	
 	var Index = function (_React$Component) {
 	    _inherits(Index, _React$Component);
@@ -83,7 +98,11 @@
 	                'div',
 	                { id: 'index' },
 	                React.createElement(_header2.default, null),
-	                React.createElement(_content2.default, null)
+	                React.createElement(_welcomePanel2.default, null),
+	                React.createElement(_content2.default, null),
+	                React.createElement(_shareingPanel2.default, null),
+	                React.createElement(_userEntry2.default, null),
+	                React.createElement(_userList2.default, null)
 	            );
 	        }
 	    }]);
@@ -126,21 +145,13 @@
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _header = __webpack_require__(5);
+	var _textTransform = __webpack_require__(5);
+	
+	var _textTransform2 = _interopRequireDefault(_textTransform);
+	
+	var _header = __webpack_require__(6);
 	
 	var _header2 = _interopRequireDefault(_header);
-	
-	var _sharingPanel = __webpack_require__(7);
-	
-	var _sharingPanel2 = _interopRequireDefault(_sharingPanel);
-	
-	var _loginPanel = __webpack_require__(10);
-	
-	var _loginPanel2 = _interopRequireDefault(_loginPanel);
-	
-	var _userList = __webpack_require__(13);
-	
-	var _userList2 = _interopRequireDefault(_userList);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -150,103 +161,112 @@
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var config = __webpack_require__(9);
+	var config = __webpack_require__(8);
 	
-	var cookie = __webpack_require__(12);
+	var cookie = __webpack_require__(9);
 	
 	var Header = function (_React$Component) {
 	    _inherits(Header, _React$Component);
 	
-	    function Header(prop) {
+	    function Header(props) {
 	        _classCallCheck(this, Header);
 	
-	        var _this = _possibleConstructorReturn(this, (Header.__proto__ || Object.getPrototypeOf(Header)).call(this, prop));
+	        var _this = _possibleConstructorReturn(this, (Header.__proto__ || Object.getPrototypeOf(Header)).call(this, props));
 	
 	        _this.state = {
 	            username: 'Flowke',
-	            imgUrl: '/public/assets/john.png',
+	            avatarUrl: '',
 	            userid: '',
-	            panelSwitch: true
+	            hintText: ''
 	        };
-	        _this.loginHover = _this.loginHover.bind(_this);
-	        _this.loginLeave = _this.loginLeave.bind(_this);
+	
+	        _this.userClick = _this.userClick.bind(_this);
+	        _this.userEnter = _this.userEnter.bind(_this);
+	        _this.userLeave = _this.userLeave.bind(_this);
+	        _this.fadeEntryOn = _this.fadeEntryOn.bind(_this);
+	        _this.loginDone = _this.loginDone.bind(_this);
+	        _this.progressLoading = _this.progressLoading.bind(_this);
+	        _this.progressLoadingDone = _this.progressLoadingDone.bind(_this);
+	        _this.globalHint = _this.globalHint.bind(_this);
+	        // 控制fadein的开关
+	        _this.userEntrySwitch = false;
+	
 	        return _this;
 	    }
 	
-	    _createClass(Header, [{
-	        key: 'handleAddItem',
-	        value: function handleAddItem(event) {
-	            event.preventDefault();
-	            this.refs.panel.handlePanel();
-	        }
-	    }, {
-	        key: 'clickLogin',
-	        value: function clickLogin(ev) {
-	            this.setState({
-	                panelSwitch: false
-	            });
-	            var $btn = $(ev.target);
-	            $(this.refs.progressBar).addClass(_header2.default.progressDone);
-	            this.refs.loginPanel.btnClick($btn.data('text'));
-	            $(this.refs.progressBar).off('transitionend');
-	        }
-	    }, {
-	        key: 'toggleSharePanel',
-	        value: function toggleSharePanel() {
-	            this.refs.panel.handleTogglePanel();
-	        }
-	    }, {
-	        key: 'loginHover',
-	        value: function loginHover(ev) {
-	            var _this2 = this;
+	    // 用户点击了分享按钮，只涉及到ui上的隐藏和显示
 	
-	            if (!this.state.panelSwitch) {
-	                return;
-	            };
-	            var pnStr = ev.target.dataset.text;
-	            var $bar = $(this.refs.progressBar);
-	            this.refs.loginPanel.panelFadeIn(ev.target.dataset.text);
-	            $bar.addClass(_header2.default.progressIn);
-	            $bar.one('transitionend', function () {
-	                _this2.setState({
-	                    panelSwitch: false
-	                });
-	                _this2.refs.loginPanel.btnClick(pnStr);
-	            });
-	        }
-	    }, {
-	        key: 'loginLeave',
-	        value: function loginLeave() {
-	            if (!this.state.panelSwitch) {
-	                return;
-	            };
-	            var $bar = $(this.refs.progressBar);
-	            this.refs.loginPanel.panelFadeOut();
-	            $bar.removeClass(_header2.default.progressIn);
-	            $bar.off('transitionend');
-	        }
-	    }, {
-	        key: 'panelSwitchOn',
-	        value: function panelSwitchOn() {
-	            $(this.refs.progressBar).removeClass(_header2.default.progressDone);
-	            $(this.refs.progressBar).removeClass(_header2.default.progressIn);
-	            this.setState({
-	                panelSwitch: true
-	            });
+	
+	    _createClass(Header, [{
+	        key: 'shareBtnClick',
+	        value: function shareBtnClick() {
+	
+	            PubSub.publish('togglePanelWrap');
 	        }
 	
 	        /**
-	         * 当登陆成功后会被调用
+	         * handler for userInfo
 	         */
 	
+	        // 点击了用户icon
+	
 	    }, {
-	        key: 'handleLogin',
-	        value: function handleLogin(state) {
-	            this.setState(state);
-	            $(this.refs.userInfo).toggleClass(_header2.default.hide);
-	            $(this.refs.loginBtn).toggleClass(_header2.default.hide);
+	        key: 'userClick',
+	        value: function userClick(msg, data) {
+	            var panel = data.panel;
+	            PubSub.publish('showEntryPanel', { panel: panel });
+	            $(this.refs.loadingLine).addClass(_header2.default.progressIn);
+	            $(this.refs.loadingLine).addClass(_header2.default.progressDone);
+	            $(this.refs.loadingLine).off('transitionend');
+	            this.userEntrySwitch = true;
 	        }
-	        // 用户注销界面
+	        // 在用户icon上hover
+	
+	    }, {
+	        key: 'userEnter',
+	        value: function userEnter() {
+	            var _this2 = this;
+	
+	            if (this.userEntrySwitch) {
+	                return;
+	            };
+	            PubSub.publish('showEntryPanel', { panel: 'login' });
+	
+	            var $bar = $(this.refs.loadingLine);
+	            // 加载线进入
+	            $bar.addClass(_header2.default.progressIn);
+	
+	            $bar.one('transitionend', function () {
+	                _this2.userEntrySwitch = true;
+	            });
+	        }
+	        // 在用户icon上out
+	
+	    }, {
+	        key: 'userLeave',
+	        value: function userLeave() {
+	            // 如果已经是加载完成就没有此效果
+	            if (this.userEntrySwitch) {
+	                return;
+	            };
+	            // 让用户面板消失
+	            PubSub.publish('userEntryFadeOut');
+	            console.log('leave');
+	            var $bar = $(this.refs.loadingLine);
+	
+	            $bar.removeClass(_header2.default.progressIn);
+	            $bar.off('transitionend');
+	        }
+	        // 让entryfade能继续触发, 进度条会重置
+	
+	    }, {
+	        key: 'fadeEntryOn',
+	        value: function fadeEntryOn() {
+	            $(this.refs.loadingLine).removeClass(_header2.default.progressDone);
+	            $(this.refs.loadingLine).removeClass(_header2.default.progressIn);
+	            this.userEntrySwitch = false;
+	        }
+	        // 用户设置操作
 	
 	    }, {
 	        key: 'showUserSetting',
@@ -262,17 +282,8 @@
 	                $(_this3.refs.userSetting).removeClass(_header2.default.bubleHov);
 	            }, 200);
 	        }
-	        // 点击menu后的toggle作用
+	        // 查看我的tile
 	
-	    }, {
-	        key: 'menuClick',
-	        value: function menuClick() {
-	            var $lines = $(this.refs.lineWrap.children);
-	            $lines.eq(0).toggleClass(_header2.default.reformLine1);
-	            $lines.eq(1).toggleClass(_header2.default.reformLine2);
-	            $lines.eq(2).toggleClass(_header2.default.reformLine3);
-	            this.refs.listPanel.handleListPanel();
-	        }
 	    }, {
 	        key: 'watchMine',
 	        value: function watchMine(ev) {
@@ -284,6 +295,8 @@
 	                from_user: cookie.get('user')
 	            });
 	        }
+	        // 主页刷新
+	
 	    }, {
 	        key: 'homeRefresh',
 	        value: function homeRefresh(ev) {
@@ -315,7 +328,6 @@
 	
 	            var fd = new FormData();
 	            fd.append('avatar', file);
-	            console.log(file);
 	            $.ajax({
 	                url: config.url + '?p=home&c=user&a=changeMyAvatar',
 	                type: 'POST',
@@ -325,28 +337,89 @@
 	                data: fd,
 	                success: function success(data) {
 	                    _this4.setState({
-	                        imgUrl: data.url
+	                        avatarUrl: data.url
 	                    });
 	                }
 	            });
 	        }
+	        /**
+	         * 登陆完毕后的回调函数
+	         * 它应该处理面板的隐藏和显示，修改state
+	         */
+	
+	    }, {
+	        key: 'loginDone',
+	        value: function loginDone(msg, data) {
+	            this.setState(data);
+	            $(this.refs.userInfo).removeClass(_header2.default.hide);
+	            $(this.refs.userIcon).addClass(_header2.default.hide);
+	        }
+	        /**
+	         * 进度条关于tile加载
+	         */
+	
+	    }, {
+	        key: 'progressLoading',
+	        value: function progressLoading() {
+	            $(this.refs.loadingLine).addClass(_header2.default.progressLoading);
+	        }
+	    }, {
+	        key: 'progressLoadingDone',
+	        value: function progressLoadingDone() {
+	            var _this5 = this;
+	
+	            $(this.refs.loadingLine).addClass(_header2.default.progressLoadingDone);
+	            setTimeout(function () {
+	                $(_this5.refs.loadingLine).removeClass(_header2.default.progressLoading);
+	                $(_this5.refs.loadingLine).removeClass(_header2.default.progressLoadingDone);
+	            }, 100);
+	        }
+	
+	        // 全局的bubble提示
+	
+	    }, {
+	        key: 'globalHint',
+	        value: function globalHint(msg, data) {
+	            var _this6 = this;
+	
+	            /* $(this.refs.globalBubble).addClass('bubbleAnima');
+	            $(this.refs.globalBubble).one('animationend',()=>{
+	                $(this.refs.globalBubble).removeClass('bubbleAnima');
+	            }); */
+	            var rawText = data.rawText,
+	                endText = data.endText;
+	            var creazyLetter = new _textTransform2.default(this.refs.shareBtn);
+	            creazyLetter.letterMutting(this.refs.shareBtn, endText, 5);
+	            clearTimeout(this.letterTimer);
+	            this.letterTimer = setTimeout(function () {
+	                creazyLetter.letterMutting(_this6.refs.shareBtn, rawText, 5);
+	            }, 1600);
+	        }
 	    }, {
 	        key: 'componentDidMount',
 	        value: function componentDidMount() {
-	            var _this5 = this;
 	
+	            PubSub.subscribe('fadeEntryOn', this.fadeEntryOn);
+	            PubSub.subscribe('userClick', this.userClick);
+	            PubSub.subscribe('loginDone', this.loginDone);
+	            PubSub.subscribe('progressLoading', this.progressLoading);
+	            PubSub.subscribe('progressLoadingDone', this.progressLoadingDone);
+	            PubSub.subscribe('globalHint', this.globalHint);
 	            $.ajax({
 	                url: config.url + '?p=home&c=user&a=autologin',
 	                dataType: 'json',
 	                success: function success(data) {
 	                    if (data.message === 1) {
 	                        cookie.set('user', data.user_id);
-	                        _this5.handleLogin({
+	                        PubSub.publish('loginDone', {
 	                            username: data.user_name,
 	                            userid: data.user_id,
-	                            imgUrl: data.user_icon
+	                            avatarUrl: data.user_icon
 	                        });
 	                    } else {
+	                        setTimeout(function () {
+	                            PubSub.publish('toggleWelcome');
+	                        }, 800);
 	                        cookie.remove('user');
 	                    }
 	                },
@@ -358,87 +431,79 @@
 	    }, {
 	        key: 'render',
 	        value: function render() {
-	            var _this6 = this;
+	            var _this7 = this;
 	
 	            return React.createElement(
-	                'div',
-	                { className: _header2.default.header + ' header', ref: 'header', onClick: this.homeRefresh.bind(this) },
+	                'header',
+	                { className: '' + _header2.default['m-header'], ref: 'headerWrap' },
 	                React.createElement(
 	                    'div',
-	                    { className: 'wrap' },
+	                    { className: '' + _header2.default.topBar },
 	                    React.createElement(
-	                        'div',
-	                        { className: _header2.default.share_btn + ' ' + _header2.default.btn + ' share_btn', onClick: this.toggleSharePanel.bind(this) },
+	                        'button',
+	                        { className: _header2.default.share_btn + ' u-btn', onClick: this.shareBtnClick.bind(this), ref: 'shareBtn' },
 	                        'Sharing'
 	                    ),
 	                    React.createElement(
 	                        'div',
-	                        { className: '' + _header2.default.loginPanel, ref: 'loginBtn' },
+	                        { className: '' + _header2.default['topBar-info'] },
 	                        React.createElement(
 	                            'span',
-	                            { className: _header2.default.login + ' login', onClick: this.clickLogin.bind(this), onMouseEnter: this.loginHover, onMouseLeave: this.loginLeave, 'data-text': 'login' },
-	                            'Log in'
-	                        ),
-	                        React.createElement(
-	                            'span',
-	                            { className: _header2.default.login + ' register', onClick: this.clickLogin.bind(this), onMouseEnter: this.loginHover, onMouseLeave: this.loginLeave, 'data-text': 'signin' },
-	                            'Sign Up'
-	                        )
-	                    ),
-	                    React.createElement(
-	                        'div',
-	                        { className: _header2.default.userInfo + ' ' + _header2.default.hide + ' userInfo', onMouseEnter: this.showUserSetting.bind(this), onMouseLeave: this.hideUserSetting.bind(this), ref: 'userInfo' },
-	                        React.createElement('img', { src: this.state.imgUrl }),
-	                        React.createElement(
-	                            'span',
-	                            null,
-	                            this.state.username
+	                            { onClick: function onClick() {
+	                                    PubSub.publish('userClick', { panel: 'login' });
+	                                }, onMouseEnter: this.userEnter, onMouseLeave: this.userLeave, ref: 'userIcon' },
+	                            React.createElement('i', { className: _header2.default.userIcon + ' icon-user u-btn' })
 	                        ),
 	                        React.createElement(
 	                            'div',
-	                            { className: _header2.default.arrow_box + ' ' + _header2.default.bubleFrame, ref: 'userSetting' },
+	                            { className: _header2.default.userInfo + ' ' + _header2.default.hide, onMouseEnter: this.showUserSetting.bind(this), onMouseLeave: this.hideUserSetting.bind(this), ref: 'userInfo' },
 	                            React.createElement(
 	                                'div',
-	                                { className: '' + _header2.default.bubleWrap, onMouseEnter: function onMouseEnter() {
-	                                        clearTimeout(_this6.timer);
-	                                    } },
+	                                { className: '' + _header2.default.imgWrap },
+	                                React.createElement('img', { src: this.state.avatarUrl })
+	                            ),
+	                            React.createElement(
+	                                'span',
+	                                null,
+	                                this.state.username
+	                            ),
+	                            React.createElement(
+	                                'div',
+	                                { className: _header2.default.arrow_box + ' ' + _header2.default.bubleFrame, ref: 'userSetting' },
 	                                React.createElement(
-	                                    'a',
-	                                    { href: '#', onClick: this.watchMine.bind(this) },
-	                                    '\u67E5\u770B\u6211\u7684'
-	                                ),
-	                                React.createElement(
-	                                    'a',
-	                                    { href: '#', onClick: this.updateAvatar.bind(this) },
-	                                    '\u66F4\u6539\u5934\u50CF'
-	                                ),
-	                                React.createElement('input', { type: 'file', className: '' + _header2.default.hide, onChange: this.AvatarChange.bind(this), ref: 'avatarUpload' }),
-	                                React.createElement(
-	                                    'a',
-	                                    { onClick: function onClick() {
-	                                            cookie.remove('user');
-	                                        }, href: config.url + '?p=home&c=user&a=logout' },
-	                                    '\u6CE8\u9500'
+	                                    'div',
+	                                    { className: '' + _header2.default.bubleWrap, onMouseEnter: function onMouseEnter() {
+	                                            clearTimeout(_this7.timer);
+	                                        } },
+	                                    React.createElement(
+	                                        'a',
+	                                        { href: '#', onClick: this.watchMine.bind(this) },
+	                                        '\u67E5\u770B\u6211\u7684'
+	                                    ),
+	                                    React.createElement(
+	                                        'a',
+	                                        { href: '#', onClick: this.updateAvatar.bind(this) },
+	                                        '\u66F4\u6539\u5934\u50CF'
+	                                    ),
+	                                    React.createElement('input', { type: 'file', className: '' + _header2.default.hide, onChange: this.AvatarChange.bind(this), ref: 'avatarUpload' }),
+	                                    React.createElement(
+	                                        'a',
+	                                        { onClick: function onClick() {
+	                                                cookie.remove('user');
+	                                            }, href: config.url + '?p=home&c=user&a=logout' },
+	                                        '\u6CE8\u9500'
+	                                    )
 	                                )
 	                            )
 	                        )
-	                    ),
-	                    React.createElement(_sharingPanel2.default, { ref: 'panel', userid: this.state.userid }),
-	                    React.createElement(_loginPanel2.default, { ref: 'loginPanel', handleLogin: this.handleLogin.bind(this), switchOn: this.panelSwitchOn.bind(this) }),
-	                    React.createElement(_userList2.default, { ref: 'listPanel' }),
-	                    React.createElement(
-	                        'div',
-	                        { className: '' + _header2.default.menu, onClick: this.menuClick.bind(this) },
-	                        React.createElement(
-	                            'div',
-	                            { ref: 'lineWrap' },
-	                            React.createElement('i', { className: '' + _header2.default.line_1 }),
-	                            React.createElement('i', { className: '' + _header2.default.line_2 }),
-	                            React.createElement('i', { className: '' + _header2.default.line_3 })
-	                        )
 	                    )
 	                ),
-	                React.createElement('div', { className: '' + _header2.default.progress, ref: 'progressBar' })
+	                React.createElement('div', { className: '' + _header2.default.progress, ref: 'loadingLine' }),
+	                React.createElement(
+	                    'div',
+	                    { className: '' + _header2.default.globalBubble, ref: 'globalBubble' },
+	                    this.state.hintText
+	                )
 	            );
 	        }
 	    }]);
@@ -453,11 +518,108 @@
 /* 5 */
 /***/ function(module, exports) {
 
-	// removed by extract-text-webpack-plugin
-	module.exports = {"hide":"_3bUTfXPQw2mGGPbfFL4v5F","header":"_3kqxxZ2HSVuDKyOqJ16eVu","userInfo":"_17BJBXtTVLMza2Uh8K_SWe","btn":"_3cbz2cpQxYv-TWGfFgA8hr","share_btn":"_3j3kW0K4sBaWRoKu5jBfQZ","loginPanel":"_1WoAzovZ-xaXef7ZUTQdLA","login":"_7L7thyy4VF3W2oqywbfTT","progress":"_2HxlhwyMj-_1mIXQyc1y6n","progressIn":"_1yC7NfmburR5Tvdq6RN2p-","progressDone":"_3qg7G7g_iXVBRGm6SX8ykr","arrow_box":"_2WxC03GWnfKinkG2LJ6paI","bubleFrame":"_1DulrcTqakz5e3j3ujVyYA","bubleHov":"_1mcGAPY9-S1t8F7zoj9JD3","bubleWrap":"etoDuYauzRdaH7RlTx3Q2","menu":"_2S2i0IxqzWmwp_liK3osiV","line_1":"_3GytdBd6tjh_o77RGtIVDO","line_2":"_2LjKFyqxs9LeztPv7bTfoR","line_3":"_3Il7ykxyVIxygOxXCya4Z5","reformLine1":"_1twIaiv4JEGp5yH1br0s7r","reformLine2":"sBPqhYkOTDV4i2q5FYllw","reformLine3":"_3tHKhomyRyNg4xkO2pOMpz"};
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var CrazyLetter = function () {
+	    function CrazyLetter(doms) {
+	        _classCallCheck(this, CrazyLetter);
+	
+	        this.doms = doms;
+	    }
+	
+	    _createClass(CrazyLetter, [{
+	        key: 'init',
+	        value: function init() {
+	            var doms = this.doms;
+	            for (var i = 0, dom; dom = doms[i++];) {
+	                this.bindHandle(dom);
+	            }
+	        }
+	    }, {
+	        key: 'bindHandle',
+	        value: function bindHandle(elem) {
+	            var self = this;
+	            (function (html) {
+	                elem.addEventListener('mouseover', function () {
+	                    self.letterMutting(this, 'view this case', 5);
+	                });
+	                elem.addEventListener('mouseout', function () {
+	                    self.letterMutting(this, html, 5);
+	                });
+	            })(elem.innerHTML);
+	        }
+	    }, {
+	        key: 'letterMutting',
+	        value: function letterMutting(dom, endStr, count, reg) {
+	            clearInterval(dom.timer);
+	            var reg1 = /[a-z]/gi;
+	            var reg2 = /[^\s]/gi;
+	            var text = dom.innerHTML;
+	            var i = 0,
+	                self = this;
+	            reg = reg1;
+	            dom.timer = setInterval(function () {
+	                if (i == count - 3) {
+	                    reg = reg2;
+	                }
+	
+	                dom.innerHTML = text = text.replace(reg, function (match) {
+	                    return self.getRandomLetter(97, 122);
+	                });
+	
+	                if (i == count - 2) {
+	                    if (text.length < endStr.length) {
+	                        text = text.slice() + endStr.slice(text.length);
+	                    } else {
+	                        text = text.slice(0, endStr.length);
+	                    }
+	                    dom.innerHTML = text;
+	                }
+	                if (++i >= count) {
+	                    clearInterval(dom.timer);
+	                    setTimeout(function () {
+	                        dom.innerHTML = endStr;
+	                    }, 200);
+	                    // dom.innerHTML = endStr;
+	                }
+	            }, 80);
+	        }
+	    }, {
+	        key: 'getRandomLetter',
+	        value: function getRandomLetter(from, to) {
+	            var at = getCode(from, to);
+	            return String.fromCharCode(at);
+	        }
+	    }]);
+	
+	    return CrazyLetter;
+	}();
+	
+	/* toolMethod */
+	
+	
+	exports.default = CrazyLetter;
+	function getCode(from, to) {
+	    return from + Math.floor(Math.random() * (to - from + 1));
+	}
 
 /***/ },
 /* 6 */
+/***/ function(module, exports) {
+
+	// removed by extract-text-webpack-plugin
+	module.exports = {"m-header":"m-header_1CGPEzKEt3","topBar":"topBar_2gKG4o7ip7","share_btn":"share_btn_2C7aOjro3L","topBar-info":"topBar-info_3DAQcPiKgN","userIcon":"userIcon_6qZeb8lCft","userInfo":"userInfo_3RF2mg6rpu","imgWrap":"imgWrap_1dIfsnFMEC","arrow_box":"arrow_box_1FTWqrqkdk","bubleFrame":"bubleFrame_4bpVGZLxnM","bubleHov":"bubleHov_2ZBJVpAMRm","bubleWrap":"bubleWrap_3028F_RY0w","progress":"progress_2tBNv3KHe4","progressIn":"progressIn_2jbCEeET8o","progressDone":"progressDone__aDQ3AyaWs","progressLoading":"progressLoading_2nNK5hpS0C","progressLoadingDone":"progressLoadingDone_1xq7KWQBBU","hide":"hide_3jlkoTYUWQ","globalBubble":"globalBubble_3_LZKmXo74"};
+
+/***/ },
+/* 7 */
 /***/ function(module, exports) {
 
 	/*
@@ -513,347 +675,7 @@
 
 
 /***/ },
-/* 7 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(React) {'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _panel = __webpack_require__(8);
-	
-	var _panel2 = _interopRequireDefault(_panel);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var config = __webpack_require__(9);
-	
-	var SharingPanel = function (_React$Component) {
-		_inherits(SharingPanel, _React$Component);
-	
-		function SharingPanel(props) {
-			_classCallCheck(this, SharingPanel);
-	
-			var _this = _possibleConstructorReturn(this, (SharingPanel.__proto__ || Object.getPrototypeOf(SharingPanel)).call(this, props));
-	
-			_this.handleTogglePanel = _this.handleTogglePanel.bind(_this);
-			_this.state = {
-				type: '请选择一种类型',
-				typeList: null,
-				title: '没有标题哦',
-				desc: '没有描述',
-				img: null,
-				category_id: '0'
-			};
-			return _this;
-		}
-		/**
-	  * 点击分享时候所发起的ajax请求
-	  */
-	
-	
-		_createClass(SharingPanel, [{
-			key: 'ajaxRequest',
-			value: function ajaxRequest(data) {
-				console.log(data);
-				$.ajax({
-					url: config.url + '?p=home&c=share&a=share',
-					type: 'POST',
-					processData: false,
-					contentType: false,
-					context: this,
-					data: data,
-					dataType: 'json',
-					success: function success(data) {
-						console.log(data);
-						if (data.message === 1) {
-							return alert('请登陆');
-						}
-					}
-				});
-			}
-			/**
-	   * 点击分享时做的动作,包括调用ajax方法
-	   */
-	
-		}, {
-			key: 'submit',
-			value: function submit(ev) {
-				ev.preventDefault();
-				var panelBox = this.refs.panel,
-				    form = ev.target;
-				$(panelBox).toggleClass(_panel2.default.hide);
-	
-				var fd = new FormData();
-				fd.append('title', form.title.value);
-				fd.append('desc', form.desc.value);
-				fd.append('category_id', this.state.category_id);
-				fd.append('img', this.state.img);
-				fd.append('user_id', this.props.userid);
-	
-				this.ajaxRequest(fd);
-			}
-			/**
-	   * 点击关闭按钮时
-	   * 隐藏分享面板的处理函数
-	   */
-	
-		}, {
-			key: 'handleTogglePanel',
-			value: function handleTogglePanel() {
-				$(this.refs.panel).toggleClass(_panel2.default.hide);
-			}
-			// tile类型的显示和隐藏
-	
-		}, {
-			key: 'typeBoard',
-			value: function typeBoard() {
-				$(this.refs.typeList).toggle(200);
-			}
-		}, {
-			key: 'listIn',
-			value: function listIn(event) {
-				$(event.target).addClass(_panel2.default.active);
-			}
-		}, {
-			key: 'listOut',
-			value: function listOut(event) {
-				$(event.target).removeClass(_panel2.default.active);
-			}
-			/**
-	   * 选择类型后做的动作
-	   */
-	
-		}, {
-			key: 'listClick',
-			value: function listClick(ev) {
-				this.setState({
-					type: ev.target.innerText,
-					category_id: ev.target.dataset.categoryid
-				});
-				$(this.refs.typeList).toggleClass(_panel2.default.hide);
-				ev.target.className = _panel2.default.active;
-			}
-			// 上传图片
-	
-		}, {
-			key: 'fileUpload',
-			value: function fileUpload(ev) {
-				// 阻止文件打开
-				ev.stopPropagation();
-				ev.preventDefault();
-				var fileList = ev.target.files || ev.dataTransfer.files,
-				    imgWrap = this.refs.imgWrap,
-				    img = this.refs.uploadImg;
-	
-				var file = fileList[fileList.length - 1];
-	
-				this.setState({ img: file });
-	
-				img.src = window.URL.createObjectURL(file);
-	
-				img.onload = function (ev) {
-					window.URL.revokeObjectURL(this.src);
-				};
-	
-				$(img).removeClass(_panel2.default.hide);
-				$(this.refs.imgHint).addClass(_panel2.default.hide);
-			}
-			// 防止打开图片
-	
-		}, {
-			key: 'imgDragover',
-			value: function imgDragover(ev) {
-				ev.stopPropagation();
-				ev.preventDefault();
-			}
-		}, {
-			key: 'componentDidMount',
-			value: function componentDidMount() {
-				var _this2 = this;
-	
-				this.refs.imgWrap.addEventListener('drop', this.fileUpload.bind(this), false);
-				this.refs.imgWrap.addEventListener('dragover', this.imgDragover.bind(this), false);
-				this.refs.imgWrap.onclick = function () {
-					_this2.refs.file.click();
-				};
-	
-				//请求分类
-				var list = [];
-				$.ajax({
-					url: config.url + '?h=home&c=category&a=getCategory',
-					dataType: 'json',
-					success: function success(data) {
-						data.forEach(function (item, indx) {
-							list.push(React.createElement(
-								'li',
-								{ key: indx, 'data-categoryid': item.category_id, onMouseOut: this.listOut, onMouseOver: this.listIn, onClick: this.listClick.bind(this) },
-								item.category_name
-							));
-						}, _this2);
-						_this2.setState({ typeList: list });
-					}
-				});
-			}
-		}, {
-			key: 'render',
-			value: function render() {
-				var _this3 = this;
-	
-				return React.createElement(
-					'div',
-					{ className: _panel2.default.wrap + ' ' + _panel2.default.hide, ref: 'panel' },
-					React.createElement('div', { className: '' + _panel2.default.mask }),
-					React.createElement(
-						'div',
-						{ className: _panel2.default.sharePanel + ' sharePanel' },
-						React.createElement(
-							'div',
-							{ className: '' },
-							React.createElement(
-								'form',
-								{ className: '' + _panel2.default.subForm, onSubmit: this.submit.bind(this) },
-								React.createElement('input', { type: 'text', placeholder: 'title', name: 'title', onChange: function onChange(ev) {
-										_this3.setState({ title: ev.target.value });
-									} }),
-								React.createElement('textarea', { rows: '8', placeholder: '\u8BF4\u70B9\u63CF\u8FF0\u5427', name: 'desc', onChange: function onChange(ev) {
-										_this3.setState({ desc: ev.target.value });
-									} }),
-								React.createElement(
-									'div',
-									{ className: _panel2.default.type + ' type', onClick: this.typeBoard.bind(this) },
-									React.createElement(
-										'div',
-										{ className: 'f-clear' },
-										React.createElement(
-											'p',
-											{ ref: 'typeName' },
-											this.state.type
-										)
-									),
-									React.createElement(
-										'ul',
-										{ className: _panel2.default.hide + ' list', ref: 'typeList' },
-										this.state.typeList
-									)
-								),
-								React.createElement(
-									'div',
-									{ className: '' + _panel2.default.upload },
-									'\u4E0A\u4F20\u4F60\u7684\u5C01\u9762',
-									React.createElement('input', { className: _panel2.default.fadeHide, ref: 'file', name: true, type: 'file', onChange: this.fileUpload.bind(this) })
-								),
-								React.createElement(
-									'button',
-									{ type: 'submit' },
-									'\u5206\u4EAB\uFF5E\uFF5E\uFF5E'
-								)
-							)
-						)
-					),
-					React.createElement(
-						'div',
-						{ className: _panel2.default.tile + ' tilePreview' },
-						React.createElement(
-							'div',
-							{ className: _panel2.default.imgWrap + ' imgWrap', ref: 'imgWrap', onDrop: this.fileUpload.bind(this) },
-							React.createElement(
-								'div',
-								{ className: '' + _panel2.default.imgHint, ref: 'imgHint' },
-								'\u53EF\u4EE5\u628A\u56FE\u7247\u62D6\u62FD\u5230\u8FD9\u91CC\uFF0C\u4E0D\u5927\u4E8E2M'
-							),
-							React.createElement('img', { src: '', ref: 'uploadImg', className: '' + _panel2.default.hide })
-						),
-						React.createElement(
-							'div',
-							{ className: 'post-info' },
-							React.createElement(
-								'div',
-								{ className: 'post-basic-info' },
-								React.createElement(
-									'h3',
-									null,
-									React.createElement(
-										'a',
-										{ href: '#' },
-										this.state.title
-									)
-								),
-								React.createElement(
-									'span',
-									null,
-									React.createElement(
-										'a',
-										{ href: '#' },
-										React.createElement(
-											'label',
-											null,
-											' '
-										),
-										this.state.type
-									)
-								),
-								React.createElement(
-									'p',
-									null,
-									this.state.desc
-								)
-							),
-							React.createElement(
-								'div',
-								{ className: _panel2.default.rateBar + ' post-info-rate-share f-clear' },
-								React.createElement(
-									'a',
-									{ href: '#', className: '' + _panel2.default.rate, ref: 'thumb' },
-									React.createElement('i', { className: 'icon-heart1' }),
-									React.createElement(
-										'span',
-										null,
-										'0'
-									)
-								),
-								React.createElement(
-									'a',
-									{ href: '#', className: '' + _panel2.default.author },
-									React.createElement(
-										'span',
-										null,
-										'By You'
-									),
-									React.createElement('i', { className: 'icon-link' })
-								)
-							)
-						)
-					)
-				);
-			}
-		}]);
-	
-		return SharingPanel;
-	}(React.Component);
-	
-	exports.default = SharingPanel;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
-
-/***/ },
 /* 8 */
-/***/ function(module, exports) {
-
-	// removed by extract-text-webpack-plugin
-	module.exports = {"hide":"_1ChEhSSjXnGL5Ki2RsBU93","fadeHide":"_3tA7ybM098xNuy_TTadeAv","wrap":"_365KjnQVoBAzR39GRYLLMB","mask":"_1PdRnrl9NkavWGzAF---1W","sharePanel":"RgwFxGmJmdonYIGms0-dQ","type":"_14gWpt5qMVTKVTCIVvF6KV","active":"_2DF7UAm31LSYeks2rlXuYi","subForm":"_1wBTlmA2p2Epu8wG5ABYLj","upload":"_2qRtQZ9FagPP74thYgYmnj","tile":"_3Xdi7HE8ti2iaoGkoPswCx","imgWrap":"_2KH32y3jjb6VA74UMAeUIO","imgHint":"_2w94SElf5tjYqDoznEdtkq","rateBar":"_3M8afIQ8blUboB-pWsbHaM","rate":"_26iGYDzn2ftcbZiesulLFZ","author":"vBJ37pIWwCI6Ril6tpPNU"};
-
-/***/ },
-/* 9 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -861,262 +683,7 @@
 	};
 
 /***/ },
-/* 10 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(React) {'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _loginPanel = __webpack_require__(11);
-	
-	var _loginPanel2 = _interopRequireDefault(_loginPanel);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var config = __webpack_require__(9);
-	var cookie = __webpack_require__(12);
-	
-	var LoginPanel = function (_React$Component) {
-	    _inherits(LoginPanel, _React$Component);
-	
-	    function LoginPanel(props) {
-	        _classCallCheck(this, LoginPanel);
-	
-	        var _this = _possibleConstructorReturn(this, (LoginPanel.__proto__ || Object.getPrototypeOf(LoginPanel)).call(this, props));
-	
-	        _this.state = {
-	            action: 'login',
-	            submitHint: '登陆'
-	        };
-	        return _this;
-	    }
-	
-	    /**
-	     * 注册与登陆面板的切换逻辑;
-	     */
-	
-	
-	    _createClass(LoginPanel, [{
-	        key: 'btnClick',
-	        value: function btnClick(panel) {
-	            var form = this.refs.form;
-	            $(this.refs.panel).addClass(_loginPanel2.default.panelFade);
-	            if (panel === 'login') {
-	                this.setState({
-	                    action: 'login',
-	                    submitHint: '登陆'
-	                });
-	
-	                $(form.cfpassword).addClass(_loginPanel2.default.hide);
-	                $(form.submit).val('Login');
-	                $(this.refs.fastGoto).attr('tit', 'signin');
-	                $(this.refs.fastGoto).text('去注册');
-	            } else {
-	                this.setState({
-	                    action: 'register',
-	                    submitHint: '注册'
-	                });
-	                $(form.cfpassword).removeClass(_loginPanel2.default.hide);
-	                $(form.submit).val('Sign up');
-	                $(this.refs.fastGoto).attr('tit', 'login');
-	                $(this.refs.fastGoto).text('去登陆');
-	            }
-	        }
-	        // hover时
-	
-	    }, {
-	        key: 'panelFadeIn',
-	        value: function panelFadeIn(panel) {
-	            var form = this.refs.form;
-	            $(this.refs.panel).addClass(_loginPanel2.default.panelFade);
-	            if (panel === 'login') {
-	                this.setState({
-	                    action: 'login',
-	                    submitHint: '登陆'
-	                });
-	
-	                $(form.cfpassword).addClass(_loginPanel2.default.hide);
-	                $(form.submit).val('Login');
-	                $(this.refs.fastGoto).attr('tit', 'signin');
-	                $(this.refs.fastGoto).text('去注册');
-	            } else {
-	                this.setState({
-	                    action: 'register',
-	                    submitHint: '注册'
-	                });
-	                $(form.cfpassword).removeClass(_loginPanel2.default.hide);
-	                $(form.submit).val('Sign up');
-	                $(this.refs.fastGoto).attr('tit', 'login');
-	                $(this.refs.fastGoto).text('去登陆');
-	            }
-	        }
-	    }, {
-	        key: 'panelFadeOut',
-	        value: function panelFadeOut() {
-	            $(this.refs.panel).removeClass(_loginPanel2.default.panelFade);
-	        }
-	        /**
-	         * 表单提交
-	         */
-	
-	    }, {
-	        key: 'submit',
-	        value: function submit(ev) {
-	            ev.preventDefault();
-	            var form = ev.target;
-	            if (this.state.action === 'login') {
-	                this.ajaxLogin({
-	                    username: form.username.value,
-	                    password: form.password.value
-	                });
-	            } else {
-	                this.ajaxRegister({
-	                    username: form.username.value,
-	                    password: form.password.value,
-	                    cfpassword: form.cfpassword.value
-	                });
-	            }
-	        }
-	    }, {
-	        key: 'ajaxRegister',
-	        value: function ajaxRegister(data) {
-	            var _this2 = this;
-	
-	            $.ajax({
-	                url: config.url + '?p=home&c=user&a=register',
-	                type: "POST",
-	                data: data,
-	                dataType: 'json',
-	                success: function success(data) {
-	                    if (data.message === 1) {
-	                        $(_this2.refs.form.reset).click();
-	                        _this2.registedState(data);
-	                    } else if (data.message === 0) {
-	                        alert('不对！！！');
-	                    }
-	                }
-	            });
-	        }
-	        /**
-	         * 当注册成功后的状态切换
-	         */
-	
-	    }, {
-	        key: 'registedState',
-	        value: function registedState(data) {
-	            this.btnClick('login');
-	            this.setState({
-	                user_id: data.id
-	            });
-	        }
-	    }, {
-	        key: 'ajaxLogin',
-	        value: function ajaxLogin(data) {
-	            var _this3 = this;
-	
-	            $.ajax({
-	                url: config.url + '?p=home&c=user&a=login',
-	                type: "POST",
-	                data: data,
-	                dataType: 'json',
-	                success: function success(data) {
-	                    if (data.message === 1) {
-	                        //在content里订阅了
-	                        PubSub.publish('initTile');
-	                        cookie.set('user', data.user_id);
-	                        _this3.closePanel();
-	                        _this3.props.handleLogin({
-	                            username: data.user_name,
-	                            userid: data.user_id,
-	                            imgUrl: data.user_icon
-	                        });
-	                    }
-	                }
-	            });
-	        }
-	    }, {
-	        key: 'closePanel',
-	        value: function closePanel() {
-	            $(this.refs.panel).removeClass(_loginPanel2.default.panelFade);
-	            this.props.switchOn();
-	        }
-	    }, {
-	        key: 'fastGoto',
-	        value: function fastGoto(ev) {
-	            if ($(ev.target).attr('tit') === 'login') {
-	                this.btnClick('login');
-	            } else {
-	                this.btnClick('signin');
-	            }
-	        }
-	    }, {
-	        key: 'render',
-	        value: function render() {
-	            return React.createElement(
-	                'div',
-	                { className: '' + _loginPanel2.default.panel, ref: 'panel' },
-	                React.createElement(
-	                    'div',
-	                    { className: '' + _loginPanel2.default.johndoe_left },
-	                    React.createElement(
-	                        'div',
-	                        { className: '' + _loginPanel2.default.john_img },
-	                        React.createElement(
-	                            'h2',
-	                            null,
-	                            '\u90A3\u65F6\u5019\u6CA1\u6709\u4EBA\u5E2E\u52A9\u4ED6\uFF0C\u4ED6\u5C31\u4E00\u4E2A\u4EBA\u5728\u665A\u4E0A\u5199\u4EE3\u7801\uFF0C\u5199\u51FA\u4ED6\u5FC3\u4E2D\u7684\u4E16\u754C\u3002'
-	                        )
-	                    ),
-	                    React.createElement(
-	                        'div',
-	                        { className: '' + _loginPanel2.default.john_text },
-	                        React.createElement(
-	                            'form',
-	                            { className: 'form', ref: 'form', action: '#', method: 'post', 'data-action': '{this.state.action}', onSubmit: this.submit.bind(this) },
-	                            React.createElement('input', { className: 'email', type: 'text', name: 'username', placeholder: 'Username', required: '' }),
-	                            React.createElement('input', { className: 'lock', type: 'password', name: 'password', placeholder: 'Password', required: '' }),
-	                            React.createElement('input', { className: '' + _loginPanel2.default.hide, type: 'password', name: 'cfpassword', placeholder: 'confirm Password', required: '' }),
-	                            React.createElement('input', { name: 'submit', type: 'submit', value: this.state.submitHint }),
-	                            React.createElement('input', { className: _loginPanel2.default.hide, name: 'reset', type: 'reset', value: this.state.submitHint })
-	                        ),
-	                        React.createElement(
-	                            'p',
-	                            { className: '' + _loginPanel2.default.fastGoto, ref: 'fastGoto', 'data-tit': 'login', onClick: this.fastGoto.bind(this) },
-	                            '\u6CE8\u518C'
-	                        )
-	                    ),
-	                    React.createElement('div', { className: '' + _loginPanel2.default.ico, onClick: this.closePanel.bind(this) })
-	                )
-	            );
-	        }
-	    }]);
-	
-	    return LoginPanel;
-	}(React.Component);
-	
-	exports.default = LoginPanel;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
-
-/***/ },
-/* 11 */
-/***/ function(module, exports) {
-
-	// removed by extract-text-webpack-plugin
-	module.exports = {"center":"VA0oIXAMwgEhwjWY5oFhR","panel":"-b5aufFWmMftugtvVb3u1","panelFade":"_3vZBmx4kTCxprE6W6KcUvI","hide":"_2V6SEE31fsW32Zbk4jKEbU","ico":"_2oU03Re51PI1MW43B_qNI5","fastGoto":"_2OO3dXYA6X8nNQadUAfYOs","johndoe_left":"Z6Tqtw6fISheehNONXysQ","johndoe_right":"_39-nJQgLMSTbUfiggXbEUR","john_img":"_3Az4iAs63Rt_qbIfNdCNxx","john_text":"_6Iirrmc5pfFiDYOsosxPa","email":"_2PAtH_8Ybxdz09vblbOySp"};
-
-/***/ },
-/* 12 */
+/* 9 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -1145,7 +712,7 @@
 	};
 
 /***/ },
-/* 13 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(React) {'use strict';
@@ -1156,174 +723,11 @@
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _userList = __webpack_require__(14);
-	
-	var _userList2 = _interopRequireDefault(_userList);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var config = __webpack_require__(9);
-	var cookie = __webpack_require__(12);
-	
-	var UserList = function (_React$Component) {
-	    _inherits(UserList, _React$Component);
-	
-	    function UserList(props) {
-	        _classCallCheck(this, UserList);
-	
-	        var _this = _possibleConstructorReturn(this, (UserList.__proto__ || Object.getPrototypeOf(UserList)).call(this, props));
-	
-	        _this.state = {
-	            userList: []
-	        };
-	        _this.handleRefresh = _this.handleRefresh.bind(_this);
-	        _this.handleListPanel = _this.handleListPanel.bind(_this);
-	        _this.updateList = _this.updateList.bind(_this);
-	        return _this;
-	    }
-	
-	    _createClass(UserList, [{
-	        key: 'handleListPanel',
-	        value: function handleListPanel() {
-	            var elems = this.refs;
-	            $(elems.panel).toggleClass(_userList2.default.panelShow);
-	            $(elems.mask).toggleClass(_userList2.default.maskShow);
-	            $(elems.listWrap).toggleClass(_userList2.default.listShow);
-	        }
-	    }, {
-	        key: 'reqUser',
-	        value: function reqUser(data, cb) {
-	            $.ajax({
-	                url: config.url + '?p=home&c=user&a=getList',
-	                dataType: 'json',
-	                success: function success(data) {
-	                    cb && cb(data);
-	                },
-	                error: function error(data) {
-	                    console.log(data);
-	                }
-	            });
-	        }
-	    }, {
-	        key: 'watchMine',
-	        value: function watchMine(ev) {
-	            ev.stopPropagation();
-	            ev.preventDefault();
-	            PubSub.publish('userTile', {
-	                watch_user: $(ev.currentTarget).data('userid'),
-	                from_user: cookie.get('user')
-	            });
-	        }
-	    }, {
-	        key: 'updateList',
-	        value: function updateList(data) {
-	            var _this2 = this;
-	
-	            var list = data.map(function (elt, i) {
-	                return React.createElement(
-	                    'li',
-	                    { key: i },
-	                    React.createElement(
-	                        'a',
-	                        { href: '#', onClick: _this2.watchMine.bind(_this2), 'data-userid': elt.user_id },
-	                        React.createElement('img', { src: elt.user_icon }),
-	                        React.createElement(
-	                            'span',
-	                            null,
-	                            elt.user_name
-	                        ),
-	                        React.createElement(
-	                            'span',
-	                            { className: '' + _userList2.default.starWrap },
-	                            React.createElement(
-	                                'span',
-	                                { className: '' + _userList2.default.starNum },
-	                                elt.user_star
-	                            ),
-	                            React.createElement('i', { className: 'icon-heart2' })
-	                        )
-	                    )
-	                );
-	            });
-	
-	            this.setState({
-	                userList: list
-	            }, function () {
-	                setTimeout(function () {
-	                    $(_this2.refs.loopIcon).removeClass('f-refreshing');
-	                }, 1000);
-	            });
-	        }
-	    }, {
-	        key: 'handleRefresh',
-	        value: function handleRefresh(ev) {
-	            ev.stopPropagation();
-	            ev.preventDefault();
-	            $(this.refs.loopIcon).addClass('f-refreshing');
-	            this.reqUser(null, this.updateList);
-	        }
-	    }, {
-	        key: 'componentDidMount',
-	        value: function componentDidMount() {
-	            this.reqUser(null, this.updateList);
-	        }
-	    }, {
-	        key: 'render',
-	        value: function render() {
-	            return React.createElement(
-	                'div',
-	                { className: _userList2.default.panel + ' userList', ref: 'panel' },
-	                React.createElement('i', { className: '' + _userList2.default.mask, ref: 'mask', onClick: this.handleRefresh }),
-	                React.createElement(
-	                    'div',
-	                    { className: '' + _userList2.default.listWrap, ref: 'listWrap' },
-	                    React.createElement('i', { className: 'icon-loop2 ' + _userList2.default.refresh, onClick: this.handleRefresh, ref: 'loopIcon' }),
-	                    React.createElement(
-	                        'ul',
-	                        null,
-	                        this.state.userList
-	                    )
-	                )
-	            );
-	        }
-	    }]);
-	
-	    return UserList;
-	}(React.Component);
-	
-	exports.default = UserList;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
-
-/***/ },
-/* 14 */
-/***/ function(module, exports) {
-
-	// removed by extract-text-webpack-plugin
-	module.exports = {"panel":"_3A-nFrer8wcWNn3kdsfGAo","refresh":"_1_BexoHUR6phDl9xWJbxlw","mask":"_3NTVfJWm8KmCVFoazUEzT2","panelShow":"_2m25Kk3GmFv3BAa56-2Z1h","maskShow":"_3JLlOoz2D3Fe7kJG1TZ2TJ","listWrap":"_2v9aEqgk1LYrB_o8RnTO1x","listShow":"UaP8mjx8FFDM1wK0hNsMH","starWrap":"w-o20A3kiSiVaRXAUmxF8","starNum":"_2Ez4RiYsusLzq-RDU1RKR0"};
-
-/***/ },
-/* 15 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(React) {'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _item = __webpack_require__(16);
+	var _item = __webpack_require__(11);
 	
 	var _item2 = _interopRequireDefault(_item);
 	
-	var _content = __webpack_require__(18);
+	var _content = __webpack_require__(13);
 	
 	var _content2 = _interopRequireDefault(_content);
 	
@@ -1335,12 +739,10 @@
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var config = __webpack_require__(9);
-	var cookie = __webpack_require__(12);
-	
-	
-	var imagesLoaded = __webpack_require__(19);
-	var wookmark = __webpack_require__(22);
+	var imagesLoaded = __webpack_require__(14);
+	var wookmark = __webpack_require__(17);
+	var config = __webpack_require__(8);
+	var cookie = __webpack_require__(9);
 	
 	var Content = function (_React$Component) {
 	    _inherits(Content, _React$Component);
@@ -1351,44 +753,46 @@
 	        var _this = _possibleConstructorReturn(this, (Content.__proto__ || Object.getPrototypeOf(Content)).call(this, props));
 	
 	        _this.state = {
-	            tileList: [],
+	            tileList: null,
 	            data: {}
 	        };
 	        // 修改this绑定
 	        _this.userTile = _this.userTile.bind(_this);
 	        _this.initTile = _this.initTile.bind(_this);
+	        _this.handlerScroll = _this.handlerScroll.bind(_this);
+	        _this.toggleWelcome = _this.toggleWelcome.bind(_this);
+	        _this.updateTile = _this.updateTile.bind(_this);
+	        // 控制是否可以发起请求
+	        // 它在发起一次请求后变成false，state更新后变成true
 	        _this.canReq = true;
-	
 	        return _this;
 	    }
+	    // 这是一个初始化请求
+	    // 它应该在访问首页的时候调用一次
+	
 	
 	    _createClass(Content, [{
-	        key: 'componentDidMount',
-	        value: function componentDidMount() {
-	            // 订阅userTile
-	            PubSub.subscribe('userTile', this.userTile);
-	            PubSub.subscribe('initTile', this.initTile);
-	            this.initTile();
-	        }
-	    }, {
 	        key: 'initTile',
 	        value: function initTile() {
 	            var _this2 = this;
 	
+	            // ajax的请求数据
 	            this.ajaxData = {
 	                offset: 0,
 	                limit: 20,
 	                from_user: cookie.get('user') || 0
 	            };
+	            // 路由信息
 	            this.queryString = 'p=home&c=tile&a=getTile';
-	            this.getRange = 'all';
 	            this.canReq = true;
+	            PubSub.publish('progressLoading');
 	            this.requestTile(this.ajaxData, function (data) {
+	                PubSub.publish('progressLoadingDone');
 	                data = data.map(function (elt, i) {
 	                    if (elt.thumb_status != 1) {
 	                        elt.thumb_status = 0;
 	                    };
-	                    return React.createElement(_item2.default, { key: i, data: elt });
+	                    return React.createElement(_item2.default, { key: Math.random().toString().slice(2), data: elt });
 	                });
 	
 	                _this2.setState({
@@ -1420,13 +824,14 @@
 	            this.canReq = true;
 	            // 重置queryString
 	            this.queryString = 'p=home&c=tile&a=userTile';
-	            this.getRange = 'user';
+	            PubSub.publish('progressLoading');
 	            this.requestTile(this.ajaxData, function (data) {
 	                data = data.map(function (elt, i) {
+	                    PubSub.publish('progressLoadingDone');
 	                    if (elt.thumb_status != 1) {
 	                        elt.thumb_status = 0;
 	                    };
-	                    return React.createElement(_item2.default, { key: i, data: elt });
+	                    return React.createElement(_item2.default, { key: Math.random().toString().slice(2), data: elt });
 	                });
 	                _this3.setState({
 	                    tileList: null
@@ -1438,36 +843,24 @@
 	            });
 	        }
 	
-	        // 通用的tile请求
-	
-	    }, {
-	        key: 'requestTile',
-	        value: function requestTile(data, cb) {
-	            $.ajax({
-	                url: config.url + '?' + this.queryString,
-	                type: 'POST',
-	                data: data,
-	                dataType: 'json',
-	                success: function success(data) {
-	                    cb && cb(data);
-	                }
-	            });
-	        }
 	        // 滚动后的tile请求，不需要修改,在state设置好路由就行
+	        // 它绑定在body上
 	
 	    }, {
 	        key: 'handlerScroll',
 	        value: function handlerScroll(ev) {
 	            var _this4 = this;
 	
-	            var $elem = $(ev.target);
-	
+	            var $elem = $(window);
 	            if (detectScrollBar($elem) && this.canReq) {
+	                // 进度条载入
+	                PubSub.publish('progressLoading');
 	
 	                this.ajaxData.offset = this.refs.tileWrap.children.length;
 	                this.ajaxData.limit = 10;
 	                this.canReq = false;
 	                this.requestTile(this.ajaxData, function (data) {
+	                    PubSub.publish('progressLoadingDone');
 	                    if (data.length === 0) {
 	                        return;
 	                    }
@@ -1488,12 +881,54 @@
 	
 	            //检测属否需要请求
 	            function detectScrollBar($elem) {
-	                if ($elem.scrollTop() + $elem.height() > $elem.prop('scrollHeight') - 150) {
+	                if ($elem.scrollTop() + $elem.height() > $(document).height() - 150) {
 	                    return true;
 	                } else {
 	                    return false;
 	                }
 	            }
+	        }
+	        // 一个通用的tile请求请求,需要传入数据
+	
+	    }, {
+	        key: 'updateTile',
+	        value: function updateTile(msg, data) {
+	            var _this5 = this;
+	
+	            this.queryString = 'p=home&c=tile&a=getTile';
+	            data = data.map(function (elt, i) {
+	                if (elt.thumb_status != 1) {
+	                    elt.thumb_status = 0;
+	                };
+	                return React.createElement(_item2.default, { key: Math.random().toString().slice(2), data: elt });
+	            });
+	            this.setState({
+	                tileList: null
+	            }, function () {
+	                setTimeout(function () {
+	                    _this5.setState({
+	                        tileList: data
+	                    }, function () {
+	                        $(_this5.refs.tileWrap.children[0]).addClass('f-blingbling');
+	                    });
+	                }, 300);
+	            });
+	        }
+	
+	        // 通用的tile请求
+	
+	    }, {
+	        key: 'requestTile',
+	        value: function requestTile(data, cb) {
+	            $.ajax({
+	                url: config.url + '?' + this.queryString,
+	                type: 'POST',
+	                data: data,
+	                dataType: 'json',
+	                success: function success(data) {
+	                    cb && cb(data);
+	                }
+	            });
 	        }
 	    }, {
 	        key: 'wookmarkLayout',
@@ -1521,6 +956,27 @@
 	            });
 	        }
 	    }, {
+	        key: 'toggleWelcome',
+	        value: function toggleWelcome() {
+	            $(this.refs.content).toggleClass(_content2.default.notLogin);
+	        }
+	
+	        /**
+	         * react的生命周期函数
+	         */
+	
+	    }, {
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            $(window).on('scroll', this.handlerScroll);
+	            // 订阅订阅tile请求
+	            PubSub.subscribe('userTile', this.userTile);
+	            PubSub.subscribe('initTile', this.initTile);
+	            PubSub.subscribe('toggleWelcome', this.toggleWelcome);
+	            PubSub.subscribe('updateTile', this.updateTile);
+	            this.initTile();
+	        }
+	    }, {
 	        key: 'componentDidUpdate',
 	        value: function componentDidUpdate() {
 	            this.wookmarkLayout();
@@ -1529,18 +985,85 @@
 	        key: 'render',
 	        value: function render() {
 	            return React.createElement(
-	                'div',
-	                { className: _content2.default.content + ' content', onScroll: this.handlerScroll.bind(this) },
+	                'section',
+	                { className: '' + _content2.default.contentBox, ref: 'content' },
 	                React.createElement(
 	                    'div',
-	                    { className: 'wrap' },
+	                    { className: '' + _content2.default["g-left"] },
 	                    React.createElement(
 	                        'div',
-	                        { id: 'main', className: _content2.default.main, role: 'main' },
+	                        { className: '' + _content2.default.layoutWrap },
 	                        React.createElement(
 	                            'ul',
-	                            { id: 'tiles', ref: 'tileWrap', className: _content2.default.tiles },
+	                            { ref: 'tileWrap' },
 	                            this.state.tileList
+	                        )
+	                    )
+	                ),
+	                React.createElement(
+	                    'div',
+	                    { className: '' + _content2.default["g-right"] },
+	                    React.createElement(
+	                        'aside',
+	                        { className: '' + _content2.default.aside },
+	                        React.createElement('span', { className: '' + _content2.default.spreadMenu }),
+	                        React.createElement(
+	                            'h3',
+	                            null,
+	                            'FILTER BY'
+	                        ),
+	                        React.createElement(
+	                            'ul',
+	                            { className: '' + _content2.default.sortElement },
+	                            React.createElement(
+	                                'li',
+	                                null,
+	                                React.createElement(
+	                                    'span',
+	                                    null,
+	                                    'THUMBS'
+	                                ),
+	                                ' ',
+	                                React.createElement('i', null)
+	                            ),
+	                            React.createElement(
+	                                'li',
+	                                null,
+	                                React.createElement(
+	                                    'span',
+	                                    null,
+	                                    'TYPE'
+	                                ),
+	                                React.createElement(
+	                                    'ul',
+	                                    { className: '' + _content2.default.typeList },
+	                                    React.createElement(
+	                                        'li',
+	                                        null,
+	                                        'dfjksk'
+	                                    ),
+	                                    React.createElement(
+	                                        'li',
+	                                        null,
+	                                        'dfjksk'
+	                                    ),
+	                                    React.createElement(
+	                                        'li',
+	                                        null,
+	                                        'dfjksk'
+	                                    )
+	                                )
+	                            ),
+	                            React.createElement(
+	                                'li',
+	                                null,
+	                                React.createElement(
+	                                    'span',
+	                                    null,
+	                                    'TIME'
+	                                ),
+	                                React.createElement('i', null)
+	                            )
 	                        )
 	                    )
 	                )
@@ -1555,7 +1078,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 16 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(React) {'use strict';
@@ -1566,7 +1089,7 @@
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _item = __webpack_require__(17);
+	var _item = __webpack_require__(12);
 	
 	var _item2 = _interopRequireDefault(_item);
 	
@@ -1578,8 +1101,8 @@
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var cookie = __webpack_require__(12);
-	var config = __webpack_require__(9);
+	var cookie = __webpack_require__(9);
+	var config = __webpack_require__(8);
 	
 	var Item = function (_React$Component) {
 		_inherits(Item, _React$Component);
@@ -1592,18 +1115,21 @@
 			_this.thumbStatus = ['icon-heart1', 'icon-heart2'];
 			_this.state = {
 				star: Number(_this.props.data.tile_star),
-				starClass: _this.thumbStatus[_this.props.data.thumb_status],
-				oldStatus: _this.props.data.thumb_status,
-				newStatus: _this.props.data.thumb_status
+				starClass: _this.thumbStatus[_this.props.data.thumb_status]
 			};
-			_this.timer = null;
+	
+			_this.oldStatus = _this.props.data.thumb_status;
+	
 			_this.requestData = null;
+			_this.thumbTimer = null;
 			return _this;
 		}
+		//点赞后的动作
+	
 	
 		_createClass(Item, [{
-			key: 'handleThumb',
-			value: function handleThumb(ev) {
+			key: 'thumbMe',
+			value: function thumbMe(ev) {
 				var _this2 = this;
 	
 				var datas = this.props.data;
@@ -1612,47 +1138,53 @@
 				var $wrap = $(ev.currentTarget);
 				// 判断是否登陆，否则不能点赞
 				if (!cookie.hasIt('user')) {
-					bubbleHint('先登陆哦');
+					bubbleHint.call(this, '先登陆哦');
 					return;
 				}
 				// 判断是否为当前用户，当前用户就不能点击
 				if (cookie.get('user') == datas.user_id) {
-					bubbleHint('不能thumb自己');
+					bubbleHint.call(this, '不能thumb自己');
 					return;
 				}
 	
 				datas.thumb_status = datas.thumb_status == 0 ? 1 : 0;
 				var stu = datas.thumb_status == 0 ? -1 : 1;
-				this.setState({
-					star: this.state.star + stu,
-					starClass: this.thumbStatus[datas.thumb_status]
-				});
 	
 				this.requestData = {
 					user_id: cookie.get('user'),
 					tile_id: datas.tile_id,
 					status: datas.thumb_status
 				};
-	
-				// 延迟两秒发送请求
-				if (!this.timer) {
-					this.timer = setTimeout(function () {
-						_this2.timer = null;
-						console.log(_this2);
+				this.setState({
+					star: this.state.star + stu,
+					starClass: this.thumbStatus[datas.thumb_status]
+				});
+				// 延迟1秒发送请求
+				if (!this.requestTimer) {
+					this.requestTimer = setTimeout(function () {
+						_this2.requestTimer = null;
 						// 查看status是否有实质改动，否则取消请求
-						if (datas.thumb_status === _this2.state.oldStatus) {
+						if (datas.thumb_status == _this2.oldStatus) {
 							return;
 						}
-	
-						_this2.reqThumb(_this2.requestData);
+						_this2.reqThumb(_this2.requestData, function (data) {
+							_this2.oldStatus = datas.thumb_status;
+							bubbleHint.call(_this2, 'thumb更新成功');
+						});
 					}, 1000);
 				}
 	
 				function bubbleHint(hint) {
-					$wrap.append('<sapn class="f-bubbleHint">' + hint + '</span>');
-					setTimeout(function () {
-						$('.f-bubbleHint').fadeOut('slow', function () {
-							$('.f-bubbleHint').remove();
+					var _this3 = this;
+	
+					if (this.thumbTimer) {
+						return;
+					};
+					$wrap.append('<sapn class="u-bubbleHint">' + hint + '</span>');
+					this.thumbTimer = setTimeout(function () {
+						$('.u-bubbleHint').fadeOut('slow', function () {
+							$('.u-bubbleHint').remove();
+							_this3.thumbTimer = null;
 						});
 					}, 300);
 				}
@@ -1672,22 +1204,19 @@
 				});
 			}
 		}, {
-			key: 'componentDidUpdate',
-			value: function componentDidUpdate() {}
-		}, {
 			key: 'render',
 			value: function render() {
 				var props = this.props.data;
 				return React.createElement(
 					'li',
-					{ className: _item2.default.item, 'data-tileid': props.tile_id, ref: 'tile' },
+					{ className: _item2.default.tileWrap, 'data-tileid': props.tile_id, ref: 'tile' },
 					React.createElement('img', { src: props.tile_cover, width: '200', height: '214' }),
 					React.createElement(
 						'div',
-						{ className: 'post-info' },
+						{ className: '' + _item2.default.postInfo },
 						React.createElement(
 							'div',
-							{ className: 'post-basic-info' },
+							{ className: '' + _item2.default.basicInfo },
 							React.createElement(
 								'h3',
 								null,
@@ -1719,10 +1248,10 @@
 						),
 						React.createElement(
 							'div',
-							{ className: _item2.default.rateBar + ' post-info-rate-share f-clear' },
+							{ className: _item2.default.rateBar + ' f-clear' },
 							React.createElement(
 								'a',
-								{ href: '#', className: '' + _item2.default.rate, ref: 'thumb', onClick: this.handleThumb.bind(this) },
+								{ href: '#', className: '' + _item2.default.rate, ref: 'thumb', onClick: this.thumbMe.bind(this) },
 								React.createElement('i', { className: this.state.starClass }),
 								React.createElement(
 									'span',
@@ -1754,27 +1283,27 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 17 */
+/* 12 */
 /***/ function(module, exports) {
 
 	// removed by extract-text-webpack-plugin
-	module.exports = {"item":"_1WSZfAAiUC4hT2pBy-VyIB","inactive":"_4-NlfR4bdKz8Qp1qg7LPj","rateBar":"_2Af3Yl4za3BPvt7fe9HkzB","rate":"_11Zaft6RGg7XAdazdj6huD","author":"_3IihGL2xJt9XUve2YVqkon"};
+	module.exports = {"tileWrap":"tileWrap_2aqlJqjlMx","postInfo":"postInfo_ZXgqpza8Co","basicInfo":"basicInfo_2CKGUkSS3i","rateBar":"rateBar_qF419WA4m8","rate":"rate_hYs_PXMBsJ","author":"author_2yrSM4Yxtl"};
 
 /***/ },
-/* 18 */
+/* 13 */
 /***/ function(module, exports) {
 
 	// removed by extract-text-webpack-plugin
-	module.exports = {"content":"_2O77IlH6ExXNrFtfNuKg26","main":"_3H_HCg3SdaOEhlu1nZKiKv","tiles":"_3TPuun2J_qtDPjRYbMkdXp"};
+	module.exports = {"contentBox":"contentBox_3s92cNA0wt","layoutWrap":"layoutWrap_3lsSYpAvN0","g-left":"g-left_1irHrfbe1e","g-right":"g-right_11Go81irgz","aside":"aside_3_7Tv4TGTN","sortElement":"sortElement_3Z9qFB1fgb","typeList":"typeList_1hESDwKzKf","notLogin":"notLogin_373DqV1sgo"};
 
 /***/ },
-/* 19 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(20);
+	module.exports = __webpack_require__(15);
 
 /***/ },
-/* 20 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -1791,7 +1320,7 @@
 	  if ( true ) {
 	    // AMD
 	    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-	      __webpack_require__(21)
+	      __webpack_require__(16)
 	    ], __WEBPACK_AMD_DEFINE_RESULT__ = function( EvEmitter ) {
 	      return factory( window, EvEmitter );
 	    }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -2150,7 +1679,7 @@
 
 
 /***/ },
-/* 21 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
@@ -2265,13 +1794,13 @@
 
 
 /***/ },
-/* 22 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(23);
+	module.exports = __webpack_require__(18);
 
 /***/ },
-/* 23 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -2289,7 +1818,7 @@
 	/*jslint plusplus: true, bitwise: true */
 	(function (factory) {
 	  if (true) {
-	    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(24), __webpack_require__(25)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(19), __webpack_require__(20)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	  } else {
 	    factory(window, document);
 	  }
@@ -3057,35 +2586,1235 @@
 
 
 /***/ },
-/* 24 */
+/* 19 */
 /***/ function(module, exports) {
 
 	module.exports = window;
 
 /***/ },
-/* 25 */
+/* 20 */
 /***/ function(module, exports) {
 
 	module.exports = document;
 
 /***/ },
+/* 21 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(React) {'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _welcomePanel = __webpack_require__(22);
+	
+	var _welcomePanel2 = _interopRequireDefault(_welcomePanel);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var WelcomePanel = function (_React$Component) {
+	    _inherits(WelcomePanel, _React$Component);
+	
+	    function WelcomePanel() {
+	        _classCallCheck(this, WelcomePanel);
+	
+	        return _possibleConstructorReturn(this, (WelcomePanel.__proto__ || Object.getPrototypeOf(WelcomePanel)).apply(this, arguments));
+	    }
+	
+	    _createClass(WelcomePanel, [{
+	        key: 'loginClick',
+	        value: function loginClick() {
+	            PubSub.publish('userClick', { panel: 'signin' });
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            return React.createElement(
+	                'div',
+	                { className: '' + _welcomePanel2.default.hintPanel },
+	                React.createElement(
+	                    'h1',
+	                    { className: '' + _welcomePanel2.default.hintTitle },
+	                    '\u5206\u4EAB\u4F60\u5FC3\u4E2D\u7684\u4E16\u754C'
+	                ),
+	                React.createElement(
+	                    'span',
+	                    { className: _welcomePanel2.default.loginBtn + ' u-btn', onClick: this.loginClick },
+	                    '\u6CE8 \u518C'
+	                )
+	            );
+	        }
+	    }]);
+	
+	    return WelcomePanel;
+	}(React.Component);
+	
+	exports.default = WelcomePanel;
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 22 */
+/***/ function(module, exports) {
+
+	// removed by extract-text-webpack-plugin
+	module.exports = {"hintPanel":"hintPanel_1_Eqxw3WzR","hintTitle":"hintTitle_3yI6FWGVnn","loginBtn":"loginBtn_-TVjnwtARs"};
+
+/***/ },
+/* 23 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(React) {'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _validation = __webpack_require__(24);
+	
+	var _validation2 = _interopRequireDefault(_validation);
+	
+	var _shareingPanel = __webpack_require__(25);
+	
+	var _shareingPanel2 = _interopRequireDefault(_shareingPanel);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var config = __webpack_require__(8);
+	var cookie = __webpack_require__(9);
+	
+	var ShareingPanel = function (_React$Component) {
+		_inherits(ShareingPanel, _React$Component);
+	
+		function ShareingPanel(props) {
+			_classCallCheck(this, ShareingPanel);
+	
+			var _this = _possibleConstructorReturn(this, (ShareingPanel.__proto__ || Object.getPrototypeOf(ShareingPanel)).call(this, props));
+	
+			_this.validation = new _validation2.default();
+	
+			_this.togglePanelWrap = _this.togglePanelWrap.bind(_this);
+			_this.closePanelWrap = _this.closePanelWrap.bind(_this);
+			_this.state = {
+				type: '请选择一种类型',
+				typeList: null,
+				title: '没有标题哦',
+				desc: '没有描述',
+				img: null,
+				category_id: '0'
+			};
+	
+			// 注册验证
+			_this.validation.addByValue('title', [{ strategy: 'isEmpty', errorMsg: 'title不能是空' }]);
+			_this.validation.addByValue('desc', [{ strategy: 'isEmpty', errorMsg: '输入点描述吧' }]);
+	
+			return _this;
+		}
+		/**
+	  * 点击分享时候所发起的ajax请求
+	  */
+	
+	
+		_createClass(ShareingPanel, [{
+			key: 'ajaxRequest',
+			value: function ajaxRequest(data) {
+				$.ajax({
+					url: config.url + '?p=home&c=share&a=share',
+					type: 'POST',
+					processData: false,
+					contentType: false,
+					context: this,
+					data: data,
+					dataType: 'json',
+					success: function success(data) {
+	
+						if (data.message == 0) {
+							$(this.refs.panelWrap).toggle(100);
+							PubSub.publish('globalHint', { rawText: 'Sharing', endText: 'Succeed in Sharing' });
+							PubSub.publish('updateTile', data.data);
+						} else if (data.message == 1) {
+							this.bubbleHint('先登录哦', this.refs.submitBtn);
+						} else if (data.message == 2) {
+							PubSub.publish('globalHint', { rawText: 'Sharing', endText: 'Fail to share' });
+						} else if (data.message == 3) {
+							PubSub.publish('globalHint', { rawText: 'Sharing', endText: 'Fail to share' });
+						}
+					}
+				});
+			}
+			/**
+	   * 点击分享时做的动作,包括调用ajax方法
+	   * 表单会触发此submit事件
+	   */
+	
+		}, {
+			key: 'submit',
+			value: function submit(ev) {
+				ev.preventDefault();
+				var form = ev.target;
+				// 进入验证步骤
+				var msg = void 0;
+	
+				msg = this.validation.valiOneByValue('title', form.title.value);
+				if (msg) {
+					$(form.title).addClass(_shareingPanel2.default.warning);
+				}
+	
+				msg = this.validation.valiOneByValue('desc', form.desc.value);
+				if (msg) {
+					$(form.desc).addClass(_shareingPanel2.default.warning);
+				}
+	
+				if (this.state.category_id == 0) {
+					$(this.refs.typeWrap).addClass(_shareingPanel2.default.warning);
+					msg = true;
+				}
+	
+				if (this.state.img == null) {
+					$(this.refs.coverBtn).addClass(_shareingPanel2.default.warning);
+					msg = true;
+				}
+	
+				if (msg) {
+					return;
+				}
+	
+				var fd = new FormData();
+				fd.append('title', form.title.value);
+				fd.append('desc', form.desc.value);
+				fd.append('category_id', this.state.category_id);
+				fd.append('img', this.state.img);
+				fd.append('user_id', cookie.get('user'));
+	
+				this.ajaxRequest(fd);
+			}
+	
+			/**
+	   * 点击分享按钮时，它会在header里被发布
+	   * toggle分享面板的处理函数
+	   */
+	
+		}, {
+			key: 'togglePanelWrap',
+			value: function togglePanelWrap(ev) {
+				if (ev.stopPropagation) {
+					if (ev.target === ev.currentTarget) {
+						$(this.refs.panelWrap).toggle(180);
+					}
+					return;
+				}
+	
+				$(this.refs.panelWrap).toggle(180);
+			}
+		}, {
+			key: 'closePanelWrap',
+			value: function closePanelWrap() {
+				$(this.refs.panelWrap).hide(100);
+			}
+			// tile类型的显示和隐藏
+	
+		}, {
+			key: 'typeBoard',
+			value: function typeBoard() {
+				$(this.refs.typeList).toggle(200);
+			}
+			// 鼠标在分类上hover
+	
+		}, {
+			key: 'listIn',
+			value: function listIn(event) {
+				$(event.target).addClass(_shareingPanel2.default.active);
+			}
+			// 鼠标在分类上leave
+	
+		}, {
+			key: 'listOut',
+			value: function listOut(event) {
+				$(event.target).removeClass(_shareingPanel2.default.active);
+			}
+		}, {
+			key: 'titleFocus',
+			value: function titleFocus(ev) {
+				$(ev.target).removeClass(_shareingPanel2.default.warning);
+			}
+		}, {
+			key: 'descFocus',
+			value: function descFocus(ev) {
+				$(ev.target).removeClass(_shareingPanel2.default.warning);
+			}
+			/**
+	   * 选择类型后做的动作
+	   */
+	
+		}, {
+			key: 'listClick',
+			value: function listClick(ev) {
+				$(this.refs.typeWrap).removeClass(_shareingPanel2.default.warning);
+				this.setState({
+					type: ev.target.innerText,
+					category_id: ev.target.dataset.categoryid
+				});
+				$(this.refs.typeList).toggleClass(_shareingPanel2.default.hide);
+				ev.target.className = _shareingPanel2.default.active;
+			}
+			// 上传图片前的处理动作
+			// 会在file input 点击的时候被change的时候被触发
+			// 会在图片拖入的时候触发
+	
+		}, {
+			key: 'fileUpload',
+			value: function fileUpload(ev) {
+				// 阻止文件打开
+				ev.stopPropagation();
+				ev.preventDefault();
+	
+				$(this.refs.coverBtn).removeClass(_shareingPanel2.default.warning);
+	
+				var fileList = ev.target.files || ev.dataTransfer.files,
+				    imgWrap = this.refs.imgWrap,
+				    img = this.refs.uploadImg;
+	
+				var file = fileList[fileList.length - 1];
+	
+				if (!file) {
+					return;
+				}
+				this.setState({ img: file });
+	
+				img.src = window.URL.createObjectURL(file);
+	
+				img.onload = function (ev) {
+					window.URL.revokeObjectURL(this.src);
+				};
+	
+				$(img).removeClass(_shareingPanel2.default.hide);
+				$(this.refs.imgHint).addClass(_shareingPanel2.default.hide);
+			}
+			// 防止打开图片
+	
+		}, {
+			key: 'imgDragover',
+			value: function imgDragover(ev) {
+				ev.stopPropagation();
+				ev.preventDefault();
+			}
+			//
+	
+		}, {
+			key: 'bubbleHint',
+			value: function bubbleHint(hint, wrap) {
+				var _this2 = this;
+	
+				if (this.hintTimer) {
+					return;
+				};
+				$(wrap).append('<sapn class="' + _shareingPanel2.default.bubbleHint + ' ' + _shareingPanel2.default.ipt + ' u-bubbleHint">' + hint + '</span>');
+				this.hintTimer = setTimeout(function () {
+					$('.u-bubbleHint').fadeOut('slow', function () {
+						$('.u-bubbleHint').remove();
+						_this2.hintTimer = null;
+					});
+				}, 500);
+			}
+			/**
+	   * 	React 组件生命周期的函数在下方声明
+	   */
+	
+		}, {
+			key: 'componentDidMount',
+			value: function componentDidMount() {
+				var _this3 = this;
+	
+				// 订阅分享按钮的点击，header可能会订阅它
+				PubSub.subscribe('togglePanelWrap', this.togglePanelWrap);
+				// 分享面板的关闭
+				PubSub.subscribe('closePanelWrap', this.closePanelWrap);
+				// 图片上传动作处理
+				this.refs.imgWrap.addEventListener('drop', this.fileUpload.bind(this), false);
+				this.refs.imgWrap.addEventListener('dragover', this.imgDragover.bind(this), false);
+				this.refs.imgWrap.onclick = function () {
+					_this3.refs.file.click();
+				};
+	
+				//请求分类信息
+				$.ajax({
+					url: config.url + '?h=home&c=category&a=getCategory',
+					dataType: 'json',
+					success: function success(data) {
+						data = data.map(function (elt, indx) {
+							return React.createElement(
+								'li',
+								{ key: indx, 'data-categoryid': elt.category_id, onMouseOut: _this3.listOut, onMouseOver: _this3.listIn, onClick: _this3.listClick.bind(_this3) },
+								elt.category_name
+							);
+						});
+						_this3.setState({ typeList: data });
+					}
+				});
+			}
+		}, {
+			key: 'render',
+			value: function render() {
+				var _this4 = this;
+	
+				return React.createElement(
+					'div',
+					{ className: _shareingPanel2.default.panelWrap + ' f-hide', ref: 'panelWrap' },
+					React.createElement('div', { className: '' + _shareingPanel2.default.mask, onClick: this.togglePanelWrap }),
+					React.createElement(
+						'div',
+						{ className: '' + _shareingPanel2.default.eltWrap, onClick: this.togglePanelWrap },
+						React.createElement(
+							'div',
+							{ className: _shareingPanel2.default.tilePreview + ' tilePreview' },
+							React.createElement(
+								'div',
+								{ className: _shareingPanel2.default.imgWrap + ' imgWrap', ref: 'imgWrap', onDrop: this.fileUpload.bind(this) },
+								React.createElement(
+									'div',
+									{ className: '' + _shareingPanel2.default.imgHint, ref: 'imgHint' },
+									'\u53EF\u4EE5\u628A\u56FE\u7247\u62D6\u62FD\u5230\u8FD9\u91CC\uFF0C\u4E0D\u5927\u4E8E2M'
+								),
+								React.createElement('img', { src: '', ref: 'uploadImg', className: '' + _shareingPanel2.default.hide })
+							),
+							React.createElement(
+								'div',
+								{ className: '' + _shareingPanel2.default.postInfo },
+								React.createElement(
+									'div',
+									{ className: '' + _shareingPanel2.default.basicInfo },
+									React.createElement(
+										'h3',
+										null,
+										React.createElement(
+											'a',
+											{ href: '#' },
+											this.state.title
+										)
+									),
+									React.createElement(
+										'span',
+										null,
+										React.createElement(
+											'a',
+											{ href: '#' },
+											React.createElement(
+												'label',
+												null,
+												' '
+											),
+											this.state.type
+										)
+									),
+									React.createElement(
+										'p',
+										null,
+										this.state.desc
+									)
+								),
+								React.createElement(
+									'div',
+									{ className: _shareingPanel2.default.rateBar + ' f-clear' },
+									React.createElement(
+										'a',
+										{ href: '#', className: '' + _shareingPanel2.default.rate, ref: 'thumb' },
+										React.createElement('i', { className: 'icon-heart1' }),
+										React.createElement(
+											'span',
+											null,
+											'0'
+										)
+									),
+									React.createElement(
+										'a',
+										{ href: '#', className: '' + _shareingPanel2.default.author },
+										React.createElement(
+											'span',
+											null,
+											'By You'
+										),
+										React.createElement('i', { className: 'icon-link' })
+									)
+								)
+							)
+						),
+						React.createElement(
+							'div',
+							{ className: _shareingPanel2.default.sharePanel + ' sharePanel' },
+							React.createElement(
+								'div',
+								{ className: '' },
+								React.createElement(
+									'form',
+									{ className: '' + _shareingPanel2.default.subForm, onSubmit: this.submit.bind(this) },
+									React.createElement('input', { type: 'text', placeholder: 'title', name: 'title', onChange: function onChange(ev) {
+											_this4.setState({ title: ev.target.value });
+										}, onFocus: this.titleFocus.bind(this) }),
+									React.createElement('textarea', { rows: '8', placeholder: '\u8BF4\u70B9\u63CF\u8FF0\u5427', name: 'desc', onChange: function onChange(ev) {
+											_this4.setState({ desc: ev.target.value });
+										}, onFocus: this.descFocus.bind(this) }),
+									React.createElement(
+										'div',
+										{ className: _shareingPanel2.default.type + ' type', onClick: this.typeBoard.bind(this), ref: 'typeWrap' },
+										React.createElement(
+											'div',
+											{ className: 'f-clear' },
+											React.createElement(
+												'p',
+												{ ref: 'typeName' },
+												this.state.type
+											)
+										),
+										React.createElement(
+											'ul',
+											{ className: _shareingPanel2.default.hide + ' ' + _shareingPanel2.default.typeList, ref: 'typeList' },
+											this.state.typeList
+										)
+									),
+									React.createElement(
+										'div',
+										{ className: '' + _shareingPanel2.default.upload, ref: 'coverBtn' },
+										'\u4E0A\u4F20\u4F60\u7684\u5C01\u9762',
+										React.createElement('input', { className: _shareingPanel2.default.fadeHide, ref: 'file', name: true, type: 'file', onChange: this.fileUpload.bind(this) })
+									),
+									React.createElement(
+										'button',
+										{ type: 'submit', ref: 'submitBtn' },
+										'\u5206\u4EAB\uFF5E\uFF5E\uFF5E'
+									)
+								)
+							)
+						)
+					)
+				);
+			}
+		}]);
+	
+		return ShareingPanel;
+	}(React.Component);
+	
+	exports.default = ShareingPanel;
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 24 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	// 表单的策略类, 定义了所有的验证算法, 他们不会主动调用, 而是等待执行环境的调用
+	var formValidation = {
+	    isEmpty: function isEmpty(val, errorMsg) {
+	        if (val === '') {
+	            return errorMsg;
+	        }
+	    },
+	    hasSpace: function hasSpace(val, errorMsg) {
+	        if (/\s/g.test(val)) {
+	            return errorMsg;
+	        }
+	    },
+	    minLength: function minLength(val, length, errorMsg) {
+	        if (val.length < length) {
+	            return errorMsg;
+	        }
+	    },
+	    maxLength: function maxLength(val, length, errorMsg) {
+	        if (val.length > length) {
+	            return errorMsg;
+	        }
+	    },
+	    mustLetterHead: function mustLetterHead(val, errorMsg) {
+	        if (!/^[a-z]/i.test(val)) {
+	            return errorMsg;
+	        }
+	    },
+	    isNumberHead: function isNumberHead(val, errorMsg) {
+	        if (/^\d/.test(val)) {
+	            return errorMsg;
+	        }
+	    },
+	    isZeroHead: function isZeroHead(val, errorMsg) {
+	        if (/^0/.test(val)) {
+	            return errorMsg;
+	        }
+	    },
+	    mustAllNum: function mustAllNum(val, errorMsg) {
+	        if (/\D/g.test(val)) {
+	            return errorMsg;
+	        }
+	    },
+	    isPhoneNum: function isPhoneNum(val, errorMsg) {
+	        if (!/^1[34578][0-9]{9}$/.test(val)) {
+	            return errorMsg;
+	        }
+	    },
+	    isID: function isID(val, errorMsg) {
+	        var ary = val.split('');
+	        var facAry = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2];
+	        var tempFac = 0;
+	        for (var i = 0, l = facAry.length; i < l; i++) {
+	            tempFac += parseInt(ary[i]) * facAry[i];
+	        }
+	        tempFac = tempFac % 11;
+	        tempFac = tempFac === 10 ? 'X' : tempFac;
+	
+	        if (!/^([1[1-5]|2[1-3]|3[1-7]|4[1-6]|5[0-4]|6[1-5]])0\d{14}[\dX]$/.test(val) || tempFac != ary[17]) {
+	            return errorMsg;
+	        }
+	    },
+	    isMail: function isMail(val, errorMsg) {
+	        if (!/^[a-z][\w\.-]{3,19}@[\da-z]{2,12}\.com(\.cn)?$/i.test(val)) {
+	            return errorMsg;
+	        }
+	    },
+	    isBirth: function isBirth(val, errorMsg) {
+	        var dateArr = val.match(/\d+/g);
+	        var date = dateInfo(new Date(dateArr.join()));
+	
+	        if (!isMatch() || !isVali()) {
+	            return errorMsg;
+	        }
+	
+	        function isMatch() {
+	            return dateArr[2] == date.day;
+	        };
+	
+	        function isVali() {
+	            var newDate = dateInfo(new Date());
+	            console.log(date);
+	            console.log(newDate);
+	            if (newDate.year > date.year) {
+	                return true;
+	            };
+	            if (newDate.year == date.year && newDate.mon > date.mon) {
+	                return true;
+	            };
+	            if (newDate.year == date.year && newDate.mon == date.mon && newDate.day >= date.day) {
+	                return true;
+	            };
+	        };
+	        function dateInfo(date) {
+	            return {
+	                year: date.getFullYear(),
+	                mon: date.getMonth(),
+	                day: date.getDate()
+	            };
+	        };
+	    }
+	};
+	
+	/*
+	    Validator 是一个执行环境,它接收用户请求,并告知用户是否验证通过
+	    但它本身不具备验证能力, 它需要把请求委托给表单的策略类, 策略类才是真正的封装了验证算法(策略类见上面代码)
+	*/
+	
+	var Validator = function () {
+	    function Validator() {
+	        _classCallCheck(this, Validator);
+	
+	        this.domRuleCache = {};
+	        this.valueRuleCache = {};
+	    }
+	    /*
+	    add方法负责给某个表单控件绑定验证规则, 把验证规则存到ruleCache中
+	    它支持同时一次添加多条规则到同一个dom上
+	    */
+	
+	
+	    _createClass(Validator, [{
+	        key: 'addByDom',
+	        value: function addByDom(dom, name, rules) {
+	            var ary = [],
+	                self = this;
+	            for (var i = 0, rule; rule = rules[i++];) {
+	                (function (rule) {
+	                    var strategyAry = rule.strategy.split(':'),
+	                        strategy = strategyAry.shift();
+	                    strategyAry.unshift(null);
+	                    strategyAry.push(rule.errorMsg);
+	
+	                    ary.push(function () {
+	                        strategyAry[0] = dom.value;
+	                        return formValidation[strategy].apply(self, strategyAry);
+	                    });
+	                })(rule);
+	            }
+	            this.domRuleCache[name] = ary;
+	        }
+	    }, {
+	        key: 'addByValue',
+	        value: function addByValue(name, rules) {
+	            var ary = [],
+	                self = this;
+	            for (var i = 0, rule; rule = rules[i++];) {
+	                (function (rule) {
+	                    var strategyAry = rule.strategy.split(':'),
+	                        strategy = strategyAry.shift();
+	                    strategyAry.unshift(null);
+	                    strategyAry.push(rule.errorMsg);
+	
+	                    ary.push(function (value) {
+	                        strategyAry[0] = value;
+	                        return formValidation[strategy].apply(self, strategyAry);
+	                    });
+	                })(rule);
+	            }
+	            this.valueRuleCache[name] = ary;
+	        }
+	        /*
+	        valiOne方法对某个表单提交的值进行验证,
+	        它需要传入一个name,来取出对应的验证规则
+	        如果值不合法, 返回对应的错误信息
+	        */
+	
+	    }, {
+	        key: 'valiOneByDom',
+	        value: function valiOneByDom(name) {
+	            for (var i = 0, fn; fn = this.domRuleCache[name][i++];) {
+	                var msg = fn();
+	                if (msg) {
+	                    return msg;
+	                }
+	            }
+	        }
+	    }, {
+	        key: 'valiOneByValue',
+	        value: function valiOneByValue(name, value) {
+	            for (var i = 0, fn; fn = this.valueRuleCache[name][i++];) {
+	                var msg = fn(value);
+	                if (msg) {
+	                    return msg;
+	                }
+	            }
+	        }
+	
+	        /*
+	        valiAll方法在此处用不到,他会遍历所有的规则进行验证,并返回错误信息
+	        比如你有一个提交按钮对整个表单进行提交,这个方法就很有用了
+	        因为是遍历所有绑定到dom上的验证规则,也就不需要传入name了
+	        */
+	
+	    }, {
+	        key: 'valiAllByDom',
+	        value: function valiAllByDom() {
+	            for (var name in this.ruleCache) {
+	                this.valiOneByDom(name);
+	            }
+	        }
+	    }, {
+	        key: 'alertTool',
+	        value: function alertTool(msg) {
+	            if (msg) {
+	                return mag;
+	            }
+	        }
+	    }]);
+	
+	    return Validator;
+	}();
+	
+	exports.default = Validator;
+
+/***/ },
+/* 25 */
+/***/ function(module, exports) {
+
+	// removed by extract-text-webpack-plugin
+	module.exports = {"hide":"hide_lKUHq8JcFY","bubbleHint":"bubbleHint_2gJOXoMnEJ","ipt":"ipt_2-HMPfBbyQ","subForm":"subForm_2g1MZTUfe3","warning":"warning_2UuXeafGeL","fadeHide":"fadeHide_BxdsgJVkcN","panelWrap":"panelWrap_2eyuNnmQs9","mask":"mask_2dSUL1NFK_","eltWrap":"eltWrap_3bGFHAtz1N","sharePanel":"sharePanel_2m3mJR1eP0","type":"type_1fHJmNvoXu","typeList":"typeList_14RMPCCbVi","active":"active_32CjFTwYVz","upload":"upload_3ynaBuSeBh","tilePreview":"tilePreview_7JPJZ4eeNR","imgWrap":"imgWrap_1Yz_gs71Gw","imgHint":"imgHint_2bVNLheMO4","postInfo":"postInfo_2msDH2feyC","basicInfo":"basicInfo_3N2-AQ-PWZ","rateBar":"rateBar_3etQ6eSRLQ","rate":"rate_2MdZQRgN4t","author":"author_1NcLbiTxFr"};
+
+/***/ },
 /* 26 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(React) {'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _userEntry = __webpack_require__(27);
+	
+	var _userEntry2 = _interopRequireDefault(_userEntry);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var config = __webpack_require__(8);
+	var cookie = __webpack_require__(9);
+	
+	var LoginPanel = function (_React$Component) {
+	    _inherits(LoginPanel, _React$Component);
+	
+	    function LoginPanel(props) {
+	        _classCallCheck(this, LoginPanel);
+	
+	        var _this = _possibleConstructorReturn(this, (LoginPanel.__proto__ || Object.getPrototypeOf(LoginPanel)).call(this, props));
+	
+	        _this.state = {
+	            action: 'login',
+	            submitHint: '登陆'
+	        };
+	
+	        _this.showEntryPanel = _this.showEntryPanel.bind(_this);
+	        _this.closePanel = _this.closePanel.bind(_this);
+	        _this.userEntryFadeOut = _this.userEntryFadeOut.bind(_this);
+	        return _this;
+	    }
+	
+	    /**
+	     * 显示入口面板
+	     * 注册与登陆面板的切换逻辑;
+	     */
+	
+	
+	    _createClass(LoginPanel, [{
+	        key: 'showEntryPanel',
+	        value: function showEntryPanel(msg, data) {
+	            var form = this.refs.form;
+	            var panel = data.panel;
+	
+	            $(this.refs.panelWrap).addClass(_userEntry2.default.panelFade);
+	            if (panel === 'login') {
+	                this.setState({
+	                    action: 'login',
+	                    submitHint: '登陆'
+	                });
+	
+	                $(form.cfpassword).addClass(_userEntry2.default.hide);
+	                $(this.refs.fastGoto).attr('tit', 'signin');
+	                $(this.refs.fastGoto).text('去注册');
+	            } else {
+	                this.setState({
+	                    action: 'register',
+	                    submitHint: '注册'
+	                });
+	                $(form.cfpassword).removeClass(_userEntry2.default.hide);
+	                $(this.refs.fastGoto).attr('tit', 'login');
+	                $(this.refs.fastGoto).text('去登陆');
+	            }
+	        }
+	        // entry面板退出
+	
+	    }, {
+	        key: 'userEntryFadeOut',
+	        value: function userEntryFadeOut() {
+	            $(this.refs.panelWrap).removeClass(_userEntry2.default.panelFade);
+	        }
+	        // 点击关闭按钮
+	
+	    }, {
+	        key: 'closePanel',
+	        value: function closePanel() {
+	            $(this.refs.panelWrap).removeClass(_userEntry2.default.panelFade);
+	            //让在useriicon上hover的时候继续能fadeIn
+	            PubSub.publish('fadeEntryOn');
+	        }
+	    }, {
+	        key: 'fastGoto',
+	        value: function fastGoto(ev) {
+	            if ($(ev.target).attr('tit') === 'login') {
+	                this.showEntryPanel('', { panel: 'login' });
+	            } else {
+	                this.showEntryPanel('', { panel: 'signin' });
+	            }
+	        }
+	        /**
+	         * 表单提交
+	         */
+	
+	    }, {
+	        key: 'submit',
+	        value: function submit(ev) {
+	            ev.preventDefault();
+	            var form = ev.target;
+	            if (this.state.action === 'login') {
+	                this.ajaxLogin({
+	                    username: form.username.value,
+	                    password: form.password.value
+	                });
+	            } else {
+	                this.ajaxRegister({
+	                    username: form.username.value,
+	                    password: form.password.value,
+	                    cfpassword: form.cfpassword.value
+	                });
+	            }
+	        }
+	        // 注册时要发起的请求
+	
+	    }, {
+	        key: 'ajaxRegister',
+	        value: function ajaxRegister(data) {
+	            var _this2 = this;
+	
+	            $.ajax({
+	                url: config.url + '?p=home&c=user&a=register',
+	                type: "POST",
+	                data: data,
+	                dataType: 'json',
+	                success: function success(data) {
+	                    if (data.message === 1) {
+	                        $(_this2.refs.form.reset).click();
+	                        _this2.registedDone(data);
+	                    } else if (data.message === 0) {
+	                        alert('不对！！！');
+	                    }
+	                }
+	            });
+	        }
+	        /**
+	         * 当注册成功后的状态切换
+	         */
+	
+	    }, {
+	        key: 'registedDone',
+	        value: function registedDone(data) {
+	            PubSub.publish('showEntryPanel', { panel: 'login' });
+	            this.setState({
+	                user_id: data.id
+	            });
+	        }
+	        // 登录时发起的请求
+	
+	    }, {
+	        key: 'ajaxLogin',
+	        value: function ajaxLogin(data) {
+	            var _this3 = this;
+	
+	            $.ajax({
+	                url: config.url + '?p=home&c=user&a=login',
+	                type: "POST",
+	                data: data,
+	                dataType: 'json',
+	                success: function success(data) {
+	                    if (data.message === 1) {
+	                        //在content里订阅了
+	                        PubSub.publish('initTile');
+	                        cookie.set('user', data.user_id);
+	                        // 关掉用户入口面板
+	                        _this3.closePanel();
+	                        PubSub.publish('toggleWelcome');
+	                        PubSub.publish('loginDone', {
+	                            username: data.user_name,
+	                            userid: data.user_id,
+	                            avatarUrl: data.user_icon
+	                        });
+	                    }
+	                }
+	            });
+	        }
+	
+	        /**
+	         * React的生命周期函数
+	         */
+	
+	    }, {
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            PubSub.subscribe('showEntryPanel', this.showEntryPanel);
+	            PubSub.subscribe('userEntryFadeOut', this.userEntryFadeOut);
+	            PubSub.subscribe('closeUserEntry', this.closePanel);
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            return React.createElement(
+	                'div',
+	                { className: '' + _userEntry2.default.panelWrap, ref: 'panelWrap' },
+	                React.createElement(
+	                    'div',
+	                    { className: '' + _userEntry2.default.entryPanel },
+	                    React.createElement(
+	                        'div',
+	                        { className: '' + _userEntry2.default.entryHint },
+	                        React.createElement(
+	                            'h2',
+	                            null,
+	                            '\u90A3\u65F6\u5019\u6CA1\u6709\u4EBA\u5E2E\u52A9\u4ED6\uFF0C\u4ED6\u5C31\u4E00\u4E2A\u4EBA\u5728\u665A\u4E0A\u5199\u4EE3\u7801\uFF0C\u5199\u51FA\u4ED6\u5FC3\u4E2D\u7684\u4E16\u754C\u3002'
+	                        )
+	                    ),
+	                    React.createElement(
+	                        'div',
+	                        { className: '' + _userEntry2.default.inputInfo },
+	                        React.createElement(
+	                            'form',
+	                            { className: 'form', ref: 'form', action: '#', method: 'post', 'data-action': '{this.state.action}', onSubmit: this.submit.bind(this) },
+	                            React.createElement('input', { className: 'email', type: 'text', name: 'username', placeholder: 'Username', required: '' }),
+	                            React.createElement('input', { className: 'lock', type: 'password', name: 'password', placeholder: 'Password', required: '' }),
+	                            React.createElement('input', { className: '' + _userEntry2.default.hide, type: 'password', name: 'cfpassword', placeholder: 'confirm Password', required: '' }),
+	                            React.createElement('input', { name: 'submit', type: 'submit', value: this.state.submitHint }),
+	                            React.createElement('input', { className: _userEntry2.default.hide, name: 'reset', type: 'reset', value: this.state.submitHint })
+	                        ),
+	                        React.createElement(
+	                            'p',
+	                            { className: '' + _userEntry2.default.fastGoto, ref: 'fastGoto', 'data-tit': 'login', onClick: this.fastGoto.bind(this) },
+	                            '\u6CE8\u518C'
+	                        )
+	                    ),
+	                    React.createElement('div', { className: '' + _userEntry2.default.close, onClick: this.closePanel.bind(this) })
+	                )
+	            );
+	        }
+	    }]);
+	
+	    return LoginPanel;
+	}(React.Component);
+	
+	exports.default = LoginPanel;
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 27 */
+/***/ function(module, exports) {
+
+	// removed by extract-text-webpack-plugin
+	module.exports = {"hide":"hide_2V-M8kB0Oo","fastGoto":"fastGoto_1zPUCksir8","center":"center_2QgOpoe2lr","panelWrap":"panelWrap_15l9SiN1qs","panelFade":"panelFade_1NEb7kJbkV","entryPanel":"entryPanel_2FFrDnm00s","entryHint":"entryHint_2QUzniN0Me","inputInfo":"inputInfo_1WQUxR5bBV","close":"close_2WBqe84tKI"};
+
+/***/ },
+/* 28 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(React) {'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _userList = __webpack_require__(29);
+	
+	var _userList2 = _interopRequireDefault(_userList);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var config = __webpack_require__(8);
+	var cookie = __webpack_require__(9);
+	
+	var UserList = function (_React$Component) {
+	    _inherits(UserList, _React$Component);
+	
+	    function UserList(props) {
+	        _classCallCheck(this, UserList);
+	
+	        var _this = _possibleConstructorReturn(this, (UserList.__proto__ || Object.getPrototypeOf(UserList)).call(this, props));
+	
+	        _this.state = {
+	            userList: []
+	        };
+	        _this.userListRefresh = _this.userListRefresh.bind(_this);
+	        _this.toggleUserList = _this.toggleUserList.bind(_this);
+	        _this.updateList = _this.updateList.bind(_this);
+	        return _this;
+	    }
+	
+	    // 点击用户菜单按钮，只涉及到ui上的隐藏和显示
+	
+	
+	    _createClass(UserList, [{
+	        key: 'menuClick',
+	        value: function menuClick() {
+	            $(this.refs.lineWrap).toggleClass(_userList2.default['menu-in']);
+	            PubSub.publish('toggleUserList');
+	        }
+	        // 点击menu后调用，主要处理用户列表的隐藏和显示
+	
+	    }, {
+	        key: 'toggleUserList',
+	        value: function toggleUserList() {
+	            var elems = this.refs;
+	            $(elems.panel).toggleClass(_userList2.default.panelShow);
+	            $(elems.mask).toggleClass(_userList2.default.maskShow);
+	            $(elems.listWrap).toggleClass(_userList2.default.listShow);
+	            // 分享面板的关闭
+	            PubSub.publish('closePanelWrap');
+	            // 用户入口的关闭
+	            PubSub.publish('closeUserEntry');
+	        }
+	    }, {
+	        key: 'watchMine',
+	        value: function watchMine(ev) {
+	            ev.stopPropagation();
+	            ev.preventDefault();
+	            PubSub.publish('userTile', {
+	                watch_user: $(ev.currentTarget).data('userid'),
+	                from_user: cookie.get('user')
+	            });
+	        }
+	        // 请求后的回调
+	
+	    }, {
+	        key: 'updateList',
+	        value: function updateList(data) {
+	            var _this2 = this;
+	
+	            var list = data.map(function (elt, i) {
+	                return React.createElement(
+	                    'li',
+	                    { key: i },
+	                    React.createElement(
+	                        'a',
+	                        { href: '#', onClick: _this2.watchMine.bind(_this2), 'data-userid': elt.user_id },
+	                        React.createElement('img', { src: elt.user_icon }),
+	                        React.createElement(
+	                            'span',
+	                            null,
+	                            elt.user_name
+	                        ),
+	                        React.createElement(
+	                            'span',
+	                            { className: '' + _userList2.default.starWrap },
+	                            React.createElement(
+	                                'span',
+	                                { className: '' + _userList2.default.starNum },
+	                                elt.user_star
+	                            ),
+	                            React.createElement('i', { className: 'icon-heart2' })
+	                        )
+	                    )
+	                );
+	            });
+	
+	            this.setState({
+	                userList: list
+	            }, function () {
+	                setTimeout(function () {
+	                    $(_this2.refs.loopIcon).removeClass('f-refreshing');
+	                }, 1000);
+	            });
+	        }
+	    }, {
+	        key: 'userListRefresh',
+	        value: function userListRefresh(ev) {
+	            ev.stopPropagation();
+	            ev.preventDefault();
+	            $(this.refs.loopIcon).addClass('f-refreshing');
+	            this.reqUser(null, this.updateList);
+	        }
+	
+	        // 处理user的请求
+	
+	    }, {
+	        key: 'reqUser',
+	        value: function reqUser(data, cb) {
+	            $.ajax({
+	                url: config.url + '?p=home&c=user&a=getList',
+	                dataType: 'json',
+	                success: function success(data) {
+	                    cb && cb(data);
+	                },
+	                error: function error(data) {
+	                    console.log(data);
+	                }
+	            });
+	        }
+	    }, {
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            this.reqUser(null, this.updateList);
+	            PubSub.subscribe('toggleUserList', this.toggleUserList);
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            return React.createElement(
+	                'div',
+	                { className: _userList2.default.panel + ' userList', ref: 'panel' },
+	                React.createElement(
+	                    'div',
+	                    { className: '' + _userList2.default.menu, onClick: this.menuClick.bind(this) },
+	                    React.createElement(
+	                        'div',
+	                        { ref: 'lineWrap' },
+	                        React.createElement('i', { className: _userList2.default.line_1 + ' ' + _userList2.default.reformLine1 }),
+	                        React.createElement('i', { className: _userList2.default.line_2 + ' ' + _userList2.default.reformLine2 }),
+	                        React.createElement('i', { className: _userList2.default.line_3 + ' ' + _userList2.default.reformLine3 })
+	                    )
+	                ),
+	                React.createElement('i', { className: '' + _userList2.default.mask, ref: 'mask', onClick: this.userListRefresh }),
+	                React.createElement(
+	                    'div',
+	                    { className: '' + _userList2.default.listWrap, ref: 'listWrap' },
+	                    React.createElement('i', { className: 'icon-loop2 ' + _userList2.default.refresh, onClick: this.userListRefresh, ref: 'loopIcon' }),
+	                    React.createElement(
+	                        'ul',
+	                        null,
+	                        this.state.userList
+	                    )
+	                )
+	            );
+	        }
+	    }]);
+	
+	    return UserList;
+	}(React.Component);
+	
+	exports.default = UserList;
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 29 */
+/***/ function(module, exports) {
+
+	// removed by extract-text-webpack-plugin
+	module.exports = {"panel":"panel_2gNOsLDbT1","menu":"menu_17x2Wl6iEN","line_1":"line_1_3xEmjFAoOm","line_2":"line_2_2prxqY_I3_","line_3":"line_3_2rwZrmYMME","menu-in":"menu-in_3G2DISoNE6","reformLine1":"reformLine1_31ti3-OIax","reformLine2":"reformLine2_34uN3WjDfy","reformLine3":"reformLine3_KMjqrpAC-I","refresh":"refresh_1OrQ57TBJM","mask":"mask_2BgDS0F_kJ","panelShow":"panelShow_mWFph1K3jb","maskShow":"maskShow_3zFytcwy3T","listWrap":"listWrap_2PmI_xCLSf","listShow":"listShow_GYy9qD0vM4","starWrap":"starWrap_1vS3N8yBvD","starNum":"starNum_150aaQMUJB"};
+
+/***/ },
+/* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 	
 	// load the styles
-	var content = __webpack_require__(27);
+	var content = __webpack_require__(31);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(33)(content, {});
+	var update = __webpack_require__(32)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
 		// When the styles change, update the <style> tags
 		if(!content.locals) {
-			module.hot.accept("!!./../../../node_modules/css-loader/index.js!./style.css", function() {
-				var newContent = require("!!./../../../node_modules/css-loader/index.js!./style.css");
+			module.hot.accept("!!./../../../node_modules/css-loader/index.js!./gen.css", function() {
+				var newContent = require("!!./../../../node_modules/css-loader/index.js!./gen.css");
 				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
 				update(newContent);
 			});
@@ -3095,51 +3824,21 @@
 	}
 
 /***/ },
-/* 27 */
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(6)();
+	exports = module.exports = __webpack_require__(7)();
 	// imports
 	
 	
 	// module
-	exports.push([module.id, "/* reset */\nhtml,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,dl,dt,dd,ol,nav ul,nav li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video{margin:0;padding:0;border:0;font-size:100%;font:inherit;vertical-align:baseline;}\narticle, aside, details, figcaption, figure,footer, header, hgroup, menu, nav, section {display: block;}\nol,ul{list-style:none;margin:0px;padding:0px;}\nblockquote,q{quotes:none;}\nblockquote:before,blockquote:after,q:before,q:after{content:'';content:none;}\ntable{border-collapse:collapse;border-spacing:0;}\n/* start editing from here */\na{text-decoration:none;}\n.txt-rt{text-align:right;}/* text align right */\n.txt-lt{text-align:left;}/* text align left */\n.txt-center{text-align:center;}/* text align center */\n.float-rt{float:right;}/* float right */\n.float-lt{float:left;}/* float left */\n.clear{clear:both;}/* clear float */\n.pos-relative{position:relative;}/* Position Relative */\n.pos-absolute{position:absolute;}/* Position Absolute */\n.vertical-base{\tvertical-align:baseline;}/* vertical align baseline */\n.vertical-top{\tvertical-align:top;}/* vertical align top */\nnav.vertical ul li{\tdisplay:block;}/* vertical menu */\nnav.horizontal ul li{\tdisplay: inline-block;}/* horizontal menu */\nimg{max-width:100%;}\n/*end reset*/\nbody{\n\tfont-family: 'Open Sans', sans-serif;\n\tbackground:#F0EFEE;\n    -moz-user-select:none;\n}\n/*---start-wrap----*/\n.wrap{\n\twidth:80%;\n\tmargin:0 auto;\n}\n/*---start-header----*/\n\n.logo{\n\tfloat:left;\n}\n.logo img{\n\tdisplay:inline-block;\n}\n.nav-icon{\n\tfloat: left;\n\tmargin: 0.6% 2% 0 8%;\n\twidth: 4.55%;\n}\n.nav-icon a span{\n\twidth:48px;\n\theight:34px;\n\tdisplay:block;\n\tbackground:url(" + __webpack_require__(28) + ") no-repeat 0px 0px;\n}\n\n.box{\n\tposition:absolute;\n\ttop:-100px;\n\twidth:100%;\n\tcolor:#7F7F7F;\n\tmargin:auto;\n\tpadding:0px;\n\tz-index:999999;\n\ttext-align:center;\n\tleft:0px;\n }\n.box_content_center{\n\tbackground: rgba(240, 239, 238, 0.74);\n}\na.boxclose{\n\tcursor: pointer;\n\ttext-align: center;\n\tdisplay: block;\n\tposition: absolute;\n\ttop: 1.9em;\n\tright: 15em;\n }\n #activator {\n}\n.menu_box_list{\n\tdisplay:inline-block;\n\tpadding: 2.1em 0;\n}\n.menu_box_list ul li {\n\tdisplay: inline-block;\n}\n.menu_box_list li a{\n\tdisplay: block;\n\tcolor: #363636;\n\tfont-size: 0.875em;\n\tmargin: 0.44em 2em;\n\tfont-weight: 900;\n\ttext-transform: uppercase;\n\ttext-align: left;\n\t-webkit-transition: all 0.5s ease-in-out;\n\t-moz-transition: all 0.5s ease-in-out;\n\t-o-transition: all 0.5s ease-in-out;\n\ttransition: all 0.5s ease-in-out;\n}\n.menu_box_list li a:hover{\n\tcolor:#B9CB41;\n}\n.menu_box_list li a > i > img{\n\tvertical-align:middle;\n\tpadding-right:10px;\n}\n/*--userinfo--*/\n.userinfo{\n\tfloat: right;\n\twidth: 15%;\n\tmargin-top: 0.3em;\n}\n.user ul li{\n\tdisplay:inline-block;\n}\n.user ul li a span{\n\tvertical-align: middle;\n\tmargin-left: 0.8em;\n\tfont-size: 1em;\n}\n.user ul li a{\n\tcolor:#8C8C8C;\n\ttransition:0.5s all;\n\t-webkit-transition:0.5s all;\n\t-moz-transition:0.5s all;\n\t-o-transition:0.5s all;\n}\n.user ul li a:hover{\n\tcolor:#B9CB41;\n}\n.user ul li a img{\n\tborder-radius:30em;\n\t-webkit-border-radius:30em;\n\t-moz-border-radius:30em;\n\t-o-border-radius:30em;\n\tvertical-align:middle;\n\n}\n/*--//userinfo--*/\n/*----start-post-grids----*/\n.post-share span{\n\tbackground:url(" + __webpack_require__(29) + ") no-repeat 0px 0px;\n\tbackground-size: cover;;\n\theight:26px;\n\twidth:26px;\n\tdisplay:inline-block;\n\tborder-radius:30em;\n\t-webkit-border-radius:30em;\n\t-moz-border-radius:30em;\n\t-o-border-radius:30em;\n}\n.post-share span:hover{\n\topacity: 0.8;\n}\n.rateit span{\n\theight:18px;\n\twidth:76px;\n\tbackground:url(" + __webpack_require__(30) + ") no-repeat 0px 0px;\n\tdisplay:inline-block;\n}\n.rateit span:hover{\n\tbackground:url(" + __webpack_require__(31) + ") no-repeat 0px 0px;\n}\n.post-basic-info{\n\tpadding: 7% 7% 5% 7%;\n}\n.post-basic-info p{\n\tword-break:break-all;\n}\n.post-basic-info h3 a{\n\tword-break:break-all;\n\tcolor: #717171;\n\tfont-size: 1.2em;\n\tmargin-bottom: 0.2em;\n\tdisplay: block;\n\ttransition:0.5s all;\n\t-webkit-transition:0.5s all;\n\t-moz-transition:0.5s all;\n\t-o-transition:0.5s all;\n}\n.post-basic-info h3 a:hover{\n\tcolor:#B9CB41;\n}\n.post-basic-info span a{\n\tcolor:#ACAAAA;\n\tfont-size:0.9em;\n}\n.post-basic-info span a label{\n\theight:12px;\n\twidth:12px;\n\tdisplay:inline-block;\n\tbackground:url(" + __webpack_require__(32) + ") no-repeat 0px 0px;\n\tmargin-right: 0.4em;\n\ttransition:0.5s all;\n\t-webkit-transition:0.5s all;\n\t-moz-transition:0.5s all;\n\t-o-transition:0.5s all;\n}\n.post-basic-info span a:hover{\n\tcolor:#B9CB41;\n}\n.post-basic-info p{\n\tfont-size: 0.875em;\n\tcolor: #B7B5B5;\n\tmargin: 0.6em 0;\n\tline-height: 1.5em;\n}\n\n.post-info-rate-share{\n\tborder-top: 1px solid rgba(183, 181, 181, 0.36);\n}\n.rateit{\n\tfloat:left;\n\tmargin: 0.18em 0 0 1em;\n}\n.post-share{\n\tfloat:right;\n\tmargin-right:1.5em;\n}\n\n.share-artical ul li img{\n\tvertical-align: text-top;\n\tpadding-right:7px;\n}\n.share-artical ul li a{\n\tfont: 400 14px/22px  'Open Sans', sans-serif;\n\tcolor: #cbcbc3;\n\tpadding-left: 20px;\n\tfont-weight: 400;\n}\n.share-artical ul li a:hover{\n\tcolor:#B9CB41;\n}\n", ""]);
+	exports.push([module.id, "/* css reset */\nhtml,body,h1,h2,h3,h4,h5,h6,div,dl,dt,dd,ul,ol,li,p,blockquote,pre,hr,figure,table,caption,th,td,form,fieldset,legend,input,button,textarea,menu{margin:0;padding:0;}\nheader,footer,section,article,aside,nav,hgroup,address,figure,figcaption,menu,details{display:block;}\ntable{border-collapse:collapse;border-spacing:0;}\ncaption,th{text-align:left;font-weight:normal;}\nhtml,body,fieldset,img,iframe,abbr{border:0;}\ni,cite,em,var,address,dfn{font-style:normal;}\n[hidefocus],summary{outline:0;}\nli{list-style:none;}\nh1,h2,h3,h4,h5,h6,small{font-size:100%;}\nsup,sub{font-size:83%;}\npre,code,kbd,samp{font-family:inherit;}\nq:before,q:after{content:none;}\ntextarea{overflow:auto;resize:none;}\nlabel,summary{cursor:default;}\na,button{cursor:pointer;}\nh1,h2,h3,h4,h5,h6,em,strong,b{font-weight:normal;}\ndel,ins,u,s,a,a:hover{text-decoration:none;}\nbody,textarea,input,button,select,keygen,legend{font:14px/1.14 \"Microsoft YaHei\", arial, simsun; color:#333; outline:0;}\nbody{background:#fff; font-size: 14px;}\nimg{user-select:none;}\na,a:hover{color:#333;}\n/* all will be global */\n\n.f-clear:after{content:\"\";display:block;clear:both;}\n.f-clear{*zoom:1}\n\n.f-inlineBlock{ display: inline-block; *zoom:1; *display: inline; }\n.f-hide{display: none;}\ni.f-refreshing{\n    animation: rotate 2s linear infinite;\n}\n.f-blingbling{ animation: blingbling .6s 6 alternate; }\n\n@keyframes blingbling {\n    from{box-shadow:0 4px 5px rgba(255, 0, 0, 0);}\n    to{box-shadow: 0 0 15px #fd0202;}\n}\n@keyframes rotate{\n    from{transform: rotate(0);}\n    to{transform: rotate(1turn);}\n}\n\n\n@keyframes globalBubble{\n    from{ bottom: 100%; }\n    20%{ bottom: 30%; }\n    50%{ bottom: 30%; }\n    to{ bottom: 100%; }\n}\n\n/* fontface */\n\ni{font-family: 'icomoon';}\n@font-face {\n  font-family: 'icomoon';\n  src:  url('/public/assets/icomoon.eot?ekdlp2');\n  src:  url('/public/assets/icomoon.eot?ekdlp2#iefix') format('embedded-opentype'),\n    url('/public/assets/icomoon.ttf?ekdlp2') format('truetype'),\n    url('/public/assets/icomoon.woff?ekdlp2') format('woff'),\n    url('/public/assets/icomoon.svg?ekdlp2#icomoon') format('svg');\n  font-weight: normal;\n  font-style: normal;\n}\n.icon-user:before {\n  content: \"\\E900\";\n}\n.icon-heart1:before {\n  content: \"\\E901\";\n}\n.icon-heart2:before {\n  content: \"\\E902\";\n}\n.icon-marker:before {\n  content: \"\\E903\";\n}\n.icon-link:before {\n  content: \"\\E005\";\n}\n.icon-cross:before {\n  content: \"\\E117\";\n}\n.icon-location:before {\n  content: \"\\E947\";\n}\n.icon-loop2:before {\n  content: \"\\EA2E\";\n}\n/* end of fontface */\n\n/* unit */\n.u-btn{ cursor: pointer; -webkit-user-select: none;}\n.u-bubbleHint{\n    position: absolute; top: -88%; left: -30px; font-size: 10px; padding: 0 5px; border-radius: 4px; background: #fc8282; box-shadow: 0 0 4px rgba(255, 127, 110, 0.49); text-align: center; color: #fff; font-weight: normal; white-space:nowrap;}\n", ""]);
 	
 	// exports
 
 
 /***/ },
-/* 28 */
-/***/ function(module, exports) {
-
-	module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAiCAYAAAAZHFoXAAAACXBIWXMAAC4jAAAuIwF4pT92AAAABGdBTUEAALGOfPtRkwAAACBjSFJNAAB6JQAAgIMAAPn/AACA6QAAdTAAAOpgAAA6mAAAF2+SX8VGAAACEElEQVR42mL8//8/w4sXL6QZGBgygTgBiEHswQyeAvECIJ4uISHxFCCAGJ8/fy7HyMj4kJubm4GTk5OBmZl5ULv+79+/DN+/f2f4+vUrAzDw5QECiAUU8jw8PAwgDwwFAApgkHuBgc7w+fPnTIAAYgKKJYNCfqgBqJuTAQIIFAOiIN+A8sJQAiA3g9wOEEBMDEMcAATQkPcAQAANeQ8ABBAoDwy59I8MAAKIhRTF169fZwDWGzR1kLS0NIO6ujrR6gECiKQkRGvHg6vZp09JUg8QQEywJEQMFhcXp7kHJCUliXYPCAAEEKgp8V9UVHRIpv/Xr18zAATQkC+FAAJoyJdCAAE05GMAIIBIioGbN2+C+g40dZCUlBSDqqoq0eoBAoikGKC140Hg2bNnJKkHCCCSPCAmJkZzDwB7WSSpBwggcDEqJCQ0JNP/u3fvGAACaMhnYoAAGvLFKEAADfkYAAggklqjt27dYnj58iXN20IqKipEqwcIIJIac7R2PKzFS0pjDiCASEpC9Gj0kdriBQggcDEqICAwJNP/hw8fGAACaMiXQgABNORLIYAAGvIeAAggkAdeD8UkBHXza4AAAnlg7s+fP4kuugYL/vXrF8gDCwACCDy8DmQ85ODgYGBlZYWNOQ7qkP/9+zfDjx8/QFwlgABihE5wgKo+0ARHFKhFO8hTD6hTsowBMsFxByDAAPNeih4X+XqwAAAAAElFTkSuQmCC"
-
-/***/ },
-/* 29 */
-/***/ function(module, exports) {
-
-	module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABYAAAAWAAP3Xv0AAAAB3RJTUUH4AkPESUxKyranwAACVtJREFUaN69mmtsHNUVx3/3zuzDa3vtXWfjVwpOoCSE8GiDQ4wTSsijIGiBQlGqRq1EK1Wqmg9V1S9IVEJtpYovpagtagtISBUSgQqBSlBQomJCS4hJgZS4ECzywAl2bK/XXj92dx63H+7M7nq9a3vx0iOtNDuzd+b/P/fcc/73zApqbD/94IFFr/9204GaPk98gWBDgPSOFZD5Ikh9LgJlgEeBdcA1wEagFfiSRwLAAj4FRoAPgVPAIJBaKZGqCJQAN4ANwB3APd5xfBn3VMAkcBr4O/CyR8j+PESWRaCMx28AfgLcCbRV7bb5dgl4FfgTcMwjuGwiSxIoAd8G7Ae+D3SuEHipjQLPAI8BF5ZLYlECJeBvBn4DbK8FWoVCKRchhAdDoZRCCHFMIB9WqMPCg7cYiYoESsB/C/gdsKYWwAWCeHA1ayNX0RG6nLARZtaZ4WLmHGdmTzNhjY0CDxvC/IurHHcxEmUJlIB/EHgUaKkF+JAMsy2+h57YTuLBBAKz6KrNaHaYvvFX6U+9MZNT2YcCIvB7ZxESCwiU8fyfawPeJWI0cnfbPrqbt3vAXQ+CDiH9kTgqx9HkIQ6OHJixVO7nSrlPSGFQjoRc5Jk3o8OmJuAbjCbubvsuW5q/hkDiJ5spe4JL2SHS9kT+14YIsD1+O1tjO+oF4hEpjD2V7j1vBoq83wYcoAYLVqGIGA0e+B0ecEHOzXA0eYj+VB9zzix1Rj3dzbewPb6HoKwDBMncCE+c+zWjueF+ibwfOF86C5VmYH+twIdlhLvb9rGl+dZ54F+59BwHR55jOHuBKTvFcHaIgyPP0Tf+qvc7l3gwwZX1G0GpbuBn5fDmTxR5/wZ0nl8x/KAIcVfrXrqbb/HOFcC/OX4IhYtEIhBIJC4Ox1N9JK1RdHAYdNV9GS/+9wG9JVgXMDLQFXbFRUqh+EpTD1tjO7yYXwi+NIcIJFN2ipQ1nr/WElxNQARAy5T9FPRVgUARow1oebBi8A1GlN74bgwRBCDnZji4CHh/XJ2M0GBE8+fS9iS2cvyvu9ARksdcOgN3sHJtg1KK1tAaWkOd+Kny/am3OTp+CAcbVZA7C8Ztit7IqmCbN87l/NwnOCqv82LAfQtmwLMoWlXWwBSJUDtBqWfbVRYfpN+hUTRzndlLl3E1EmOB96+LdrMnca8X84IZZ4rBmYHSybodSPhfzKIL69AhVAP4YAoTv0A5OERVnK8Hb6Ld6CKr5jicO8CgcxKBRKHY1LiZ+zt+QNSM52ftROpNPsueR84PlLUeztHSGbgGvVBWbAJI2ylcZQMC14LN8jbajMtQuIRFhFWy3au9Ltc23si3O35YBF5yKn2Cw2Mv4RTi37cG4HrQ60AWLeCNrHCLmScgBMPZIaadKSzLYnxsAmX5txak3FE+sQcAxbWN3dzX8eA88APpE7zw2dOk7RSiPKT1/kFxCLVWC1R5EhhvWQpACIlAMpYb4WTyBFfY15PN5gqDpGLI+JiYEaO7fhtbYztoMJvngX/+s6eYsMZKQ6fYLgcCgOUTCKH3sFWAd6k3Glkd6iARbCcgg0xYY1zKXiRpjRIXrQTS9WRlNj/GNA3iLc2sqfsmAoHppdgqwQM0ec7PE5CUFIjFvB4QQW5o2kpvfDdtoTWEZBgQOMoibU9yMvkOwekorfKyfM4PmgFaVjUTrgvNu5u/DE+l+3nh4tOk7PGlwPsDtVOq87oiLOu4Y/UD9MZ3eUVK5T+GCNBAM1c5X2VOZlG4CARplSITnCQa2ESYEP5Sc5XDhHWJ46k+3koeIe2kvKq9fCvsJnTrYwnwEb7R+h164juLJLHAUTYuDq6lGB9LFcW8Bv967kXOZz5m9XQ7neEub8Z0lR2aO0PSGvV2assGn1/ZPoEMum9TEXydjHBn614PvB6fczO8N/UWJ6f6aaKFzfI2hFUoUEHTZDYwwfnMaWxlcyFzjgtzZ/MeKyx6USnbVLI04BQTAN10quj5O1v30hvfnXdAsTCLiEZuD96EMEz88DRNg5ZVMaKB60hMtxcKUk0SNWeBHIAs2hx8CPNFir+Hvat1LzfHd5UF72DTZWyg01hX8KuEeItesA1mlDV1XV66rZmd9g+Kg+4UumOWN4GgJ7aTntjOipLYX6RZlUFiMOUmGRBvE6wzvXtIQrKuluBngJOgd2bFITToMdviez8eSNAb34UUOjTK6XmBYMgZ5EjuBVbLTgad/9BkNC2I6Rr6/xzw33IzkEL3KvUDlcvayHpagq3oQqM4mjxUVs+7uHzsvMc/rVcYds9xRf3V+SLlKodpe7JGoQ/AaxSt19K89TK6V4kQgs7w5V77Q5C2J3knddQTVwvh+Cnw2sYt9MR25s+mrDE+zZxBiOryewVLAy8Wn5Awb5d/Ct1oBQRhoxC7trLIuhmvFbjQlCfM7u94kEYzhh80x1NvkMyNVpsmK1kf0F+MudQtNrpLPAqKOWc2fyEoQ0SM+rLZpFjPN5kt+Hp+IP1v/jVxuOIOrEqbBB4H5hbMQMksHAOeUUpxIXMOhQUo6o0oW2O3YcoALm4euKvK6/mPpt9fShJXa38D/lGCtawWUsBjQohtZ2dPbx3LXSIR7AAUNzXfiq0s3koeYcpOETYibGrczO7EvSXg3+PAxSeZsEar1jYVbADdn7VLLyzWG92lUM9ui+9J3NP2PQxRkE2TVpIJa5wGM0o8kPD2sCoP/vmLTzFmjSxHVS7HJtF9qpdKvQ+L9EYV7mHg4eMTr8+8mTyEW5R9mgItdEXWsyrYhsxnF8mH0+9y4OKTtQQ/C/wCnR3LmlF64tgfT9Hz42u8DYf5bs7Npc/MfXTLnDMdbA11UmdEiobp6jzrpOlP9fHS8F9J2UtuRqoB/0v0G5vlt9d980PJEIa0lfUjgXwkEWxPXFm/kSvqN9AUaCHjzHBm9jSDMwMMZc7iKLtWC3bS8/wf8FRnVS84Skk4ysEQxh5Xub8C1W2IAKY0cZWD5epthKxNoQK9YB9Ch41aDPySBIpJeHYZuku8jxq1YIpsEp0qHwU+8k+u6CVfBRIS3SXej+5VxlYIPI2usI+j83xV74tX8qI7hG603odu961FN52WYzNoVfkaWtv0U1Rha/6iewkioHuVG9Ads/Xovk0TBRUt0J4+i5bsJ9GSeN4u8Av/q8EyiPgWYGGVd/C2gaX2f/+zx+cgVDPApfY/LYztB+m+bfcAAAAldEVYdGRhdGU6Y3JlYXRlADIwMTYtMDktMTdUMTU6MjI6MjQrMDg6MDAD85u8AAAAJXRFWHRkYXRlOm1vZGlmeQAyMDE2LTA5LTE1VDE3OjM3OjQ5KzA4OjAwFU3P6wAAAE10RVh0c29mdHdhcmUASW1hZ2VNYWdpY2sgNy4wLjEtNiBRMTYgeDg2XzY0IDIwMTYtMDktMTcgaHR0cDovL3d3dy5pbWFnZW1hZ2ljay5vcmfd2aVOAAAAY3RFWHRzdmc6Y29tbWVudAAgR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxOS4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICDOSJALAAAAGHRFWHRUaHVtYjo6RG9jdW1lbnQ6OlBhZ2VzADGn/7svAAAAGHRFWHRUaHVtYjo6SW1hZ2U6OkhlaWdodAA2ODS1avOkAAAAF3RFWHRUaHVtYjo6SW1hZ2U6OldpZHRoADY4NCabo/kAAAAZdEVYdFRodW1iOjpNaW1ldHlwZQBpbWFnZS9wbmc/slZOAAAAF3RFWHRUaHVtYjo6TVRpbWUAMTQ3MzkzMjI2OfFwbL4AAAASdEVYdFRodW1iOjpTaXplADQ4LjFLQtFR4u0AAABfdEVYdFRodW1iOjpVUkkAZmlsZTovLy9ob21lL3d3d3Jvb3Qvc2l0ZS93d3cuZWFzeWljb24ubmV0L2Nkbi1pbWcuZWFzeWljb24uY24vc3JjLzEyMDQzLzEyMDQzNzAucG5nBNb72gAAAABJRU5ErkJggg=="
-
-/***/ },
-/* 30 */
-/***/ function(module, exports) {
-
-	module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEwAAAASCAYAAADxEzisAAAACXBIWXMAAC4jAAAuIwF4pT92AAAABGdBTUEAALGOfPtRkwAAACBjSFJNAAB6JQAAgIMAAPn/AACA6QAAdTAAAOpgAAA6mAAAF2+SX8VGAAAErUlEQVR42mL8//8/Ay6w64wTM5BiB+Lvbib7cCskEgDNEwJSn4Fm/WagArh37x4rkGJVUlL6RgWzGIEUJxD/BJr3F5c6gABiImCOCBCHQAONGiAFiNUZqAdUgdiTSmaB/BgMxGL4FAEEEBMRDmoHYl4qOSoPiF2oGGAgs+qoZBYPEHcAsRo+RQABRCjAQLEnBcTOVMiOAUBKGojdgGwWKmQhkBnuQKwHZBtRIcCcoH71wKcIIICY8HiQFZodQSCMSg4CATsgVqCCeXJAbA9l+1HBPJgfQ4ARwIZLEUAA4UthNkCsDGVbAANQkYLUJQ6kvKFcbiqVO55Qs0DAFehJbgpSKyjwLaFcJWikYgUAAYQvwGKAmBnKlgRifwo85wx1CNxsaAqmJDvGIAmZIHmYHOAHzY6wMInBpRAggBh3nnZcBqRNQU0HtIBUQasdPwHxQzQ1IIdvATYTSqApqRdI+QDxLyBGbobIArEAEh8kdxtUhSOJcQHxYyCeDDRvHTRggoBUDjT7ITcd2KCFMyOS2CsgfonEB7ntDxDPAzYTJkDN64IGDkj8H1r25kfi/4K67x+a+04DBBDI0Bogngj1KD7AB8S6aGJTgLgVid8MxKA2TCkBsxix1EYXgbgKiE8gia0H4mdAPB2IDQiYKYbWJAC19cqAeBqSWBuo3QbEBQTMAkWINprYNiCuBQggRlDDFZo9CqAeJqbNBYrJPGBKWIWjzAqGBqYEkVkCFCBVQPM+4MiC/NCIySbSvEtAnAVMWUdxmBcKpCYgZUN8AJQL6oG4D2jeb4AAYkRu6QM96gxNbdp4DDgIyiZAz10hUNCrQwMNX7sLlHpqgGbNJ7LsioOmEmkcSkCpewUQFwE994qAWZrQ1OeAR9k1IC4EmrULJgAQQIzoXSOgR/2hWYERiwFvgdgW6MHrRNaOoIbvYSAWx6GkHmhWE4kFfjWQasEhDcrWdkAPfiLSLA2o+0SwSIMCJgRo1jpkQYAAwlZLGuAILFg5pkmC/0AFvSgeeQMG0oEhHjlZKCYWqEP9hKucxXAfQAAxYWms2qOpeY3ExiaPD7ii2fEdWhjDgBXQTlESUpcwSA9awf4eiS9EYvPCAVrAY/MrWB69EQsQQOgpTBMpVN9DKwItaAH5B9Z/A3pSgEgHRSKxz0IDG1Tg3oOKiSL1AIgBjkjZ+z4QhwMxqFu0Dq1NRUzg80EjlAHqt0nQsjsPWvQwQFsFWsj6AAKICUuICwLxEVBLGli+TATiN0BcCPXoHagBekSUX+pQtaCyoB/kOKA5p4F4I7Qhuwpqvw8JAeYN1bMaZAawfFkPxA+gAQfy6GdQXxAYGMTUzjrQAAJFXjjQnHwgfg3Ek6G9iMPQIgWlUgAIICYkD7JBUwColnQDeuwkskIgfwNU83oiYxE0lPMIpBaotwiI3yOZ9QCIQZ7MB2JFoN2yRKQIGWhjGlRrhQHxfZgckP0H6lEnaDuOGPeBKjdQ5DmgF+xA/mmQM0FNCVAlArQb3tQCCCAGUC0JwsAWPwcQW8D4uDBQDTOR6tyAWJUIdfpALEZI3d27d0WB2IAIdYJAbESEOgsgZiFCnTkQc8L4AAEGAMAdBVEJzSgcAAAAAElFTkSuQmCC"
-
-/***/ },
-/* 31 */
-/***/ function(module, exports) {
-
-	module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEwAAAASCAYAAADxEzisAAAACXBIWXMAAC4jAAAuIwF4pT92AAAABGdBTUEAALGOfPtRkwAAACBjSFJNAAB6JQAAgIMAAPn/AACA6QAAdTAAAOpgAAA6mAAAF2+SX8VGAAAFm0lEQVR42mL8//8/Ay6w64wTM5BiB+Lvbib7cCskEgDNEwJSn4Fm/WagAjh0IUVcgMPth55G2EdKzbp37x4jkOIE4p9KSkp/cakDCCAmAuaIAHEINNCoAVKAWJ1KZjH8+/+j7N//70lUMg7kx2AgFsOnCCCACAWYKhC3AzEvlRyVB8Qu1AqwP//eJf/597GESsbxAHEHEKvhUwQQQIQCzBOIpYDYmQrZMQBISQOxG5DNQql5u896BANTGP+PP3elbt+9ZEqFAHOC+tUDnyKAAGLC40FWaHYEgTAqOQgE7IBYgVLDmBg5/UD0jz+3GH79fRpLBffB/BgCLM/YcCkCCCB8KcwGiJWhbAtgACpSkLrEgZQ3lMsNTbmUpFbx//9/eUHKsZ8M33/f9gF6kpuCAl8OSFlCuUrQSMUKAAIIX4DFADEzlC0JxP4U+NEZ6hC42dAUTBZgZGR1Axb2IjD+198XFP7+/2pLgfv8oNkRFiYxuBQCBBDjztOOy4A0qAz4jhaQKmi14ycgfoimBlQWbQE2E0qgMd8LpHyA+BcQIzdDZIFYAIkPkrsNqsKRxLiA+DEQTwaatw4kcPBC0qa//z45MzGysfxn+P8PphAoxgYMMKTIZmRgZRL5y8DIBG+u/P//m4mFSeA3J6vmKlPt4iRoSuqCBs4fUOJEshuUwviR+L+g7vuH5r7TAAEE8nANEE+EehQf4ANiXTSxKUDcisRvBvkHiEsJJRIstdFFIK4C4hMwgd9/X8azMPFP/vX3RTR+4/4z/P73mhkpRzCwMcv852O3mc7JolGOpLANiEEpu4CA+0BlmDaa2DYgrgUIIEZQwxWaPQqgHiamzfUS1EQApoRVOMqYYGhgShCZJaaDAgto3gdskvvOBccCa8QZwFTFRYxhvOyWb/nZHaK11Fx34iizQoHUBKRsiA+AckE9EPcBG7S/AQKIEbmlD/SoMzS1aeMx4CAQ5wA9d4VAwawODTR87a5noBQONGs+EQW9OguT0Fpg2wun24BZkIGP3eGEEKePP9BzrwgU9JpAahoQO+BRdg2IC4Fm7YIJAAQQI3rXCOgwUOG+Hppt0MFbILYFevA6kbUZqOF7GIjFcSipB5rVRELtqMrEyH4OWDPyYJMX4HB/IcIVqg704Ccia0cNqPtEsOZzYBMDaNY6ZEGAAMJWSxrgCCxYOaZJQu0DKuhF8cgbkFibCfz7/wtn8+H33xdC0AqGWKAO9ROuchbDfQABxISlsWqPpuY1EhubPD7gimYHqCZG7nhbAe0UJdYwZkYeYOr/z4hoXrABfQUv5xl+/L3P9vPvYzcS3OcALeCx+RUsj96IBQgg9BSmiRSq76EVgRa0gPwDFXcBelKASAdFIrHPQgMbVODeg4qJIvUACIL/DP9ikWrBn8Kc/mXsLPJpzEz8XyHNjc8MP37fiiYyO/JBI5QB6rdJ0LI7D1r0MEBbBVrI+gACiAlLiAsC8RFQaxxYvkwE4jdAXAj16B2oAXrEFNJQtaCyoB/kOKA5p4F4I7Qhuwpqvw+R5Zc6sJaUBeUUHjazW4KcnhZGWpnddgZzZgObS/rAADwPsurHn/uGwMAgpnbWgQYQKPLCgWVVPhC/BuLJ0J7IYWiRglIpAAQQE5KD2KApAFRLugE9dhJZIZC/Aap5PbTxR8xQziOQWqDeIiB+j2TWAyAOBzLzgVgRaDfBcoeZibeQhYnvpxCn/xwrvQ51fY3IC/BuhNHGuw6Gi4w4WJR6gf3KL9//3Ionwn2gyg0UeQ7oBTuQfxrkTFBTAtRNAkYAvKkFEEBMaIHXDfRIARB/x2YDUPwpNKWtIWZAARrwW3ApAMqBskE2WosfR/nFv5ef3TncRDsvFZcaYGorYWRk9wFmzbNEuG89tBZ8jE0SKP4DiIuBzE7kcAIIMABIm7U2IRuo1wAAAABJRU5ErkJggg=="
-
-/***/ },
 /* 32 */
-/***/ function(module, exports) {
-
-	module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAACXBIWXMAAC4jAAAuIwF4pT92AAAABGdBTUEAALGOfPtRkwAAACBjSFJNAAB6JQAAgIMAAPn/AACA6QAAdTAAAOpgAAA6mAAAF2+SX8VGAAAA/ElEQVR42mL8//8/Awhs3bqVGUjlA3EUEBsA8QUgXgbEE729vf8yQAFAADGCNEAV7wViewZMcBCInWGaAAKICSpYAVUMEuwD4iAo/RcqXgHTDRBALFA6GUr3AU0qg7LXA20GaSiFyreCBAECCGaDBJTeh+YcGF8aJgAQQDANl6G0E5oGGP8aTAAggGBOmgXEZkBcBA2AfVDF+VD5KTANAAEEs2EBEN8EYpDiIiDeAqVB/DtQeTAACCCwBmiQJUJDBRmA+HHI8QAQQDAbQJqOw0ICCbRCxeEAIIAYYTENA0A/gJzjDWICFfugxyJAADFhidloIN4EpTEAQIABAIp7QWSaxvtSAAAAAElFTkSuQmCC"
-
-/***/ },
-/* 33 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -3388,46 +4087,6 @@
 		if(oldSrc)
 			URL.revokeObjectURL(oldSrc);
 	}
-
-
-/***/ },
-/* 34 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// style-loader: Adds some css to the DOM by adding a <style> tag
-	
-	// load the styles
-	var content = __webpack_require__(35);
-	if(typeof content === 'string') content = [[module.id, content, '']];
-	// add the styles to the DOM
-	var update = __webpack_require__(33)(content, {});
-	if(content.locals) module.exports = content.locals;
-	// Hot Module Replacement
-	if(false) {
-		// When the styles change, update the <style> tags
-		if(!content.locals) {
-			module.hot.accept("!!./../../../node_modules/css-loader/index.js!./main.css", function() {
-				var newContent = require("!!./../../../node_modules/css-loader/index.js!./main.css");
-				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-				update(newContent);
-			});
-		}
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
-	}
-
-/***/ },
-/* 35 */
-/***/ function(module, exports, __webpack_require__) {
-
-	exports = module.exports = __webpack_require__(6)();
-	// imports
-	
-	
-	// module
-	exports.push([module.id, "/* css reset */\nbody,p,h1,h2,h3,h4,h5,h6,dl,dd,form,select{margin:0;}\nol,ul{list-style:none; padding:0; margin:0;}\na{text-decoration:none; color:black;}\nimg{border:none; vertical-align:top;}\nem,i,{font-style:normal;}\nstrong{font-weight:normal;}\ntable{border-collapse:collapse;}\nth,td{padding:0;}\ninput{margin:0; padding:0;}\ntextarea{margin:0; padding:0; resize:none; overflow:auto; outline:none;}\n\nbody,html{height: 100%; overflow: hidden;}\n\n.f-clear:after{content:\"\";display:block;clear:both;}\n.f-clear{*zoom:1}\n\n.f-inlineBlock{ display: inline-block; *zoom:1; *display: inline; }\n\n@font-face {\n  font-family: 'icomoon';\n  src:  url('/public/assets/icomoon.eot?ekdlp2');\n  src:  url('/public/assets/icomoon.eot?ekdlp2#iefix') format('embedded-opentype'),\n    url('/public/assets/icomoon.ttf?ekdlp2') format('truetype'),\n    url('/public/assets/icomoon.woff?ekdlp2') format('woff'),\n    url('/public/assets/icomoon.svg?ekdlp2#icomoon') format('svg');\n  font-weight: normal;\n  font-style: normal;\n}\n\n@keyframes rotate{\n    from{transform: rotate(0);}\n    to{transform: rotate(1turn);}\n}\ni.f-refreshing{\n    animation: rotate 2s linear infinite;\n}\n.f-bubbleHint{position: absolute; top: -88%; left: -30px; font-size: 10px; padding: 0 5px; border-radius: 4px; background: #fc8282; box-shadow: 0 0 4px rgba(255, 127, 110, 0.49); text-align: center; color: #fff; font-weight: normal; white-space:nowrap;}\n\n.icon-用户:before {\n  content: \"\\E900\";\n}\n.icon-heart1:before {\n  content: \"\\E901\";\n}\n.icon-heart2:before {\n  content: \"\\E902\";\n}\n.icon-marker:before {\n  content: \"\\E903\";\n}\n.icon-link:before {\n  content: \"\\E005\";\n}\n.icon-cross:before {\n  content: \"\\E117\";\n}\n.icon-location:before {\n  content: \"\\E947\";\n}\n.icon-loop2:before {\n  content: \"\\EA2E\";\n}\n/**\n * Progress bar for imagesLoaded\n */\n.progress-bar {\n  background-color: #0BC20B;\n  height: 2px;\n  position: absolute;\n  top: 0;\n  left: 0;\n  right: 0;\n  width: 0;\n  box-shadow: 0 1px 3px rgba(11, 194, 11, 0.2);\n  -webkit-transition: width 0.3s ease-out;\n     -moz-transition: width 0.3s ease-out;\n       -o-transition: width 0.3s ease-out;\n          transition: width 0.3s ease-out;\n}\n\n/**\n * Placerholder css\n */\n.wookmark-placeholder {\n          border-radius: 2px;\n     -moz-border-radius: 2px;\n  -webkit-border-radius: 2px;\n  background-color: #eee;\n  border: 1px solid #dedede;\n  z-index: -1;\n}\n\n.example-tiles {\n  position: relative; /** Needed to ensure items are laid out relative to this container **/\n  margin: 0;\n  padding: 0;\n}\n\n.example-tiles li {\n  display: block;\n  list-style-type: none;\n  float: left;\n  margin: 5px;\n  -webkit-transition: all 0.3s ease-out;\n     -moz-transition: all 0.3s ease-out;\n       -o-transition: all 0.3s ease-out;\n          transition: all 0.3s ease-out;\n}\n\n.example-tiles a,\n.example-tiles a:hover {\n  color: #555;\n  background-color: #eee;\n  text-align: center;\n  display: table-cell;\n  vertical-align: middle;\n  width: 200px;\n  height: 200px;\n  font-size: 2em;\n  font-weight: bold;\n  text-decoration: none;\n  border: 1px solid #ddd;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);\n  padding: 5px 8px;\n  border-radius: 3px;\n}\n\n.example-tiles a:hover {\n  background-color: #ddd;\n}\n", ""]);
-	
-	// exports
 
 
 /***/ }
