@@ -28,4 +28,9 @@ class ThumbModel extends Model{
         $sql = "DELETE FROM {$this->table} WHERE tile_id = ? AND user_id = ?";
         return $this->delete($sql,$data);
     }
+
+    public function dropThumb($data){
+        $sql = "DELETE FROM {$this->table} WHERE tile_id = ?";
+        return $this->delete($sql,$data);
+    }
 }

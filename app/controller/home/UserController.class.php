@@ -16,17 +16,27 @@ class UserController extends BaseController {
         $userModel = new UserModel('user');
 
         $ret = $userModel->checkUser([$username, $password]);
-        if(!empty($ret)){
-            $_SESSION['user'] = $ret['user_id'];
+
+        if(empty($ret[0])){
             echo json_encode([
-                'message' => 1,
-                'user_id' => $ret['user_id'],
-                'user_name' => $ret['user_name'],
-                'user_icon' => $ret['user_icon']
+                "message" => 1,
+                "desc" => "用户名不存在"
+            ]);
+            return;
+        }
+
+        if( empty($ret[1]) ){
+            echo json_encode([
+                "message" => 2,
+                "desc" => "密码错误"
             ]);
         }else{
+            $_SESSION['user'] = $ret[1]['user_id'];
             echo json_encode([
-                "message" => 0
+                'message' => 0,
+                'user_id' => $ret[1]['user_id'],
+                'user_name' => $ret[1]['user_name'],
+                'user_icon' => $ret[1]['user_icon']
             ]);
         }
     }
@@ -38,12 +48,20 @@ class UserController extends BaseController {
 
         // 调用usermodel进行注册
         $userModel = new UserModel('user');
+
+        $ret = $userModel->checkUserName([$username]);
+
+        if(!empty($ret)){
+            echo json_encode( ['message'=>2, 'desc'=>'用户名已存在'] );
+            return;
+        }
+
         $ret = $userModel->registerUser([$username, $password, $GLOBALS['config']['default_icon']]);
 
-        if($ret === false){
-            echo json_encode( ['message'=>0] );
+        if($ret == 0){
+            echo json_encode( ['message'=>1, 'desc'=>'注册失败'] );
         }else{
-            echo json_encode(['message'=>1,'id'=>$ret]);
+            echo json_encode(['message'=>0,'id'=>$ret]);
         }
     }
 

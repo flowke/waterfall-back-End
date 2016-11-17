@@ -60,4 +60,20 @@ class TileController extends BaseController{
 
 
     }
+
+    public function dropTileAction(){
+        $tileid = $_GET['tileid'];
+
+        $thumbModel = new ThumbModel('thumb');
+        $tileModel = new TileModel('tile');
+        $thumbModel->dropThumb([$tileid]);
+        $ret = $tileModel->dropTile([$tileid]);
+
+        if($ret == 0){
+            echo json_encode(["message"=>1]);
+        }else{
+            echo json_encode(["message"=>0]);
+        }
+
+    }
 }

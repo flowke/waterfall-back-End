@@ -10,8 +10,20 @@ class UserModel extends Model{
      */
     public function checkUser($data){
 
-        $sql = "SELECT * FROM {$this->table} WHERE user_name = ? AND user_passw = ? LIMIT 1";
+        $arr = [];
 
+        $sql = "SELECT * FROM {$this->table} WHERE user_name = ? LIMIT 1";
+        $arr[0] = $this->dbClass->getRow($sql,[$data[0]]);
+
+
+        $sql = "SELECT * FROM {$this->table} WHERE user_name = ? AND user_passw = ? LIMIT 1";
+        $arr[1] = $this->dbClass->getRow($sql,$data);
+
+        return $arr;
+    }
+
+    public function checkUserName($data){
+        $sql = "SELECT * FROM {$this->table} WHERE user_name = ? LIMIT 1";
         return $this->dbClass->getRow($sql,$data);
     }
     /**

@@ -292,7 +292,24 @@
 	            // 从content里订阅了
 	            PubSub.publish('userTile', {
 	                watch_user: this.state.userid,
-	                from_user: cookie.get('user')
+	                from_user: cookie.get('user'),
+	                userName: this.state.username
+	            });
+	        }
+	        //编辑我的
+	
+	    }, {
+	        key: 'editMine',
+	        value: function editMine(ev) {
+	            this.watchMine(ev);
+	            // 从content里订阅了
+	            PubSub.publish('userTile', {
+	                watch_user: this.state.userid,
+	                from_user: cookie.get('user'),
+	                userName: this.state.username,
+	                cb: function cb() {
+	                    PubSub.publish('tileEidtState', { message: true });
+	                }
 	            });
 	        }
 	        // 主页刷新
@@ -336,9 +353,14 @@
 	                contentType: false,
 	                data: fd,
 	                success: function success(data) {
-	                    _this4.setState({
-	                        avatarUrl: data.url
-	                    });
+	                    if (data.message === 1) {
+	                        PubSub.publish('globalHint', { rawText: 'Sharing', endText: 'Avatar updated' });
+	                        _this4.setState({
+	                            avatarUrl: data.url
+	                        });
+	                    } else if (data.message === 2) {
+	                        PubSub.publish('globalHint', { rawText: 'Sharing', endText: 'Avatar update fail' });
+	                    }
 	                }
 	            });
 	        }
@@ -393,7 +415,7 @@
 	            clearTimeout(this.letterTimer);
 	            this.letterTimer = setTimeout(function () {
 	                creazyLetter.letterMutting(_this6.refs.shareBtn, rawText, 4);
-	            }, 1600);
+	            }, 2500);
 	        }
 	    }, {
 	        key: 'componentDidMount',
@@ -440,6 +462,11 @@
 	                    'div',
 	                    { className: '' + _header2.default.topBar },
 	                    React.createElement(
+	                        'a',
+	                        { href: 'http://www.flowke.com', className: '' + _header2.default.home },
+	                        React.createElement('i', { className: 'icon-home', ref: 'loopIcon' })
+	                    ),
+	                    React.createElement(
 	                        'button',
 	                        { className: _header2.default.share_btn + ' u-btn', onClick: this.shareBtnClick.bind(this), ref: 'shareBtn' },
 	                        'Sharing'
@@ -479,6 +506,11 @@
 	                                        'a',
 	                                        { href: '#', onClick: this.watchMine.bind(this) },
 	                                        '\u67E5\u770B\u6211\u7684'
+	                                    ),
+	                                    React.createElement(
+	                                        'a',
+	                                        { href: '#', onClick: this.editMine.bind(this) },
+	                                        '\u7F16\u8F91\u6211\u7684'
 	                                    ),
 	                                    React.createElement(
 	                                        'a',
@@ -616,7 +648,7 @@
 /***/ function(module, exports) {
 
 	// removed by extract-text-webpack-plugin
-	module.exports = {"m-header":"m-header_1CGPEzKEt3","topBar":"topBar_2gKG4o7ip7","share_btn":"share_btn_2C7aOjro3L","topBar-info":"topBar-info_3DAQcPiKgN","userIcon":"userIcon_6qZeb8lCft","userInfo":"userInfo_3RF2mg6rpu","imgWrap":"imgWrap_1dIfsnFMEC","arrow_box":"arrow_box_1FTWqrqkdk","bubleFrame":"bubleFrame_4bpVGZLxnM","bubleHov":"bubleHov_2ZBJVpAMRm","bubleWrap":"bubleWrap_3028F_RY0w","progress":"progress_2tBNv3KHe4","progressIn":"progressIn_2jbCEeET8o","progressDone":"progressDone__aDQ3AyaWs","progressLoading":"progressLoading_2nNK5hpS0C","progressLoadingDone":"progressLoadingDone_1xq7KWQBBU","hide":"hide_3jlkoTYUWQ","globalBubble":"globalBubble_3_LZKmXo74"};
+	module.exports = {"m-header":"m-header_1CGPEzKEt3","topBar":"topBar_2gKG4o7ip7","share_btn":"share_btn_2C7aOjro3L","topBar-info":"topBar-info_3DAQcPiKgN","userIcon":"userIcon_6qZeb8lCft","home":"home_3o9XVyY8BO","userInfo":"userInfo_3RF2mg6rpu","imgWrap":"imgWrap_1dIfsnFMEC","arrow_box":"arrow_box_1FTWqrqkdk","bubleFrame":"bubleFrame_4bpVGZLxnM","bubleHov":"bubleHov_2ZBJVpAMRm","bubleWrap":"bubleWrap_3028F_RY0w","progress":"progress_2tBNv3KHe4","progressIn":"progressIn_2jbCEeET8o","progressDone":"progressDone__aDQ3AyaWs","progressLoading":"progressLoading_2nNK5hpS0C","progressLoadingDone":"progressLoadingDone_1xq7KWQBBU","hide":"hide_3jlkoTYUWQ","globalBubble":"globalBubble_3_LZKmXo74"};
 
 /***/ },
 /* 7 */
@@ -757,8 +789,8 @@
 	
 	        _this.state = {
 	            tileList: null,
-	            data: {},
-	            typeList: null
+	            typeList: null,
+	            belong: 'All'
 	        };
 	        // 修改this绑定
 	        _this.userTile = _this.userTile.bind(_this);
@@ -766,9 +798,12 @@
 	        _this.handlerScroll = _this.handlerScroll.bind(_this);
 	        _this.toggleWelcome = _this.toggleWelcome.bind(_this);
 	        _this.updateTile = _this.updateTile.bind(_this);
+	        _this.tileEidtState = _this.tileEidtState.bind(_this);
+	        _this.recordDropTile = _this.recordDropTile.bind(_this);
 	        // 控制是否可以发起请求
 	        // 它在发起一次请求后变成false，state更新后变成true
 	        _this.canReq = true;
+	        _this.editState = false;
 	        // 用于判断向什么角色发起请求，
 	        // all代表向全局发起请求，
 	        // 非all向user发起请求，值代表userid， watch_user
@@ -777,6 +812,8 @@
 	        _this.filterType = 0;
 	        _this.sortBy = 'TIME';
 	        _this.order = 'DESC';
+	
+	        _this.dropList = [];
 	        return _this;
 	    }
 	    // 这是一个初始化请求
@@ -790,6 +827,7 @@
 	
 	            var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 	
+	            this.editState = false;
 	            // ajax的请求数据
 	            this.ajaxData = {
 	                offset: 0,
@@ -803,6 +841,8 @@
 	            this.queryString = 'p=home&c=tile&a=getTile';
 	            this.canReq = true;
 	            this.filterRole = 'all';
+	
+	            this.setState({ belong: "All" });
 	
 	            PubSub.publish('progressLoading');
 	            this.requestTile(this.ajaxData, function (data) {
@@ -834,6 +874,7 @@
 	        value: function userTile(subName, args) {
 	            var _this3 = this;
 	
+	            this.editState = false;
 	            if (!args.from_user) {
 	                args.from_user = 0;
 	            }
@@ -850,6 +891,8 @@
 	            this.canReq = true;
 	            this.filterRole = args.watch_user;
 	
+	            this.setState({ belong: args.userName || '' });
+	
 	            // 重置queryString
 	            this.queryString = 'p=home&c=tile&a=userTile';
 	            PubSub.publish('progressLoading');
@@ -864,13 +907,15 @@
 	                    if (elt.thumb_status != 1) {
 	                        elt.thumb_status = 0;
 	                    };
-	                    return React.createElement(_item2.default, { key: Math.random().toString().slice(2), data: elt });
+	                    return React.createElement(_item2.default, { key: Math.random().toString().slice(2), handleDrop: _this3.recordDropTile, data: elt });
 	                });
 	                _this3.setState({
 	                    tileList: null
 	                }, function () {
 	                    _this3.setState({
 	                        tileList: data
+	                    }, function () {
+	                        typeof args.cb === 'function' && args.cb();
 	                    });
 	                });
 	            });
@@ -929,10 +974,10 @@
 	            var _this5 = this;
 	
 	            this.queryString = 'p=home&c=tile&a=getTile';
-	
+	            this.editState = false;
 	            $(this.refs.timeArrow).addClass(_content2.default.redColor);
 	            $(this.refs.thumbArrow).removeClass(_content2.default.redColor);
-	
+	            this.setState({ belong: "All" });
 	            data = data.map(function (elt, i) {
 	                if (elt.thumb_status != 1) {
 	                    elt.thumb_status = 0;
@@ -957,6 +1002,7 @@
 	    }, {
 	        key: 'requestTile',
 	        value: function requestTile(data, cb) {
+	            this.editState = false;
 	            $.ajax({
 	                url: config.url + '?' + this.queryString,
 	                type: 'POST',
@@ -995,7 +1041,8 @@
 	                    watch_user: this.filterRole,
 	                    filterType: this.filterType,
 	                    sortBy: this.sortBy,
-	                    order: this.order
+	                    order: this.order,
+	                    userName: this.state.belong
 	                });
 	            }
 	        }
@@ -1033,7 +1080,8 @@
 	                    watch_user: this.filterRole,
 	                    filterType: this.filterType,
 	                    sortBy: this.sortBy,
-	                    order: this.refs.thumbArrow.order
+	                    order: this.refs.thumbArrow.order,
+	                    userName: this.state.belong
 	                });
 	            }
 	        }
@@ -1071,9 +1119,19 @@
 	                    watch_user: this.filterRole,
 	                    filterType: this.filterType,
 	                    sortBy: this.sortBy,
-	                    order: this.refs.timeArrow.order
+	                    order: this.refs.timeArrow.order,
+	                    userName: this.state.belong
 	                });
 	            }
+	        }
+	    }, {
+	        key: 'backTohome',
+	        value: function backTohome() {
+	            PubSub.publish('initTile', {
+	                filterType: 0,
+	                sortBy: 'TIME',
+	                order: 'DESC'
+	            });
 	        }
 	
 	        /* end handler for aside */
@@ -1088,10 +1146,12 @@
 	                offset: 20, // Optional, the distance between grid items
 	                itemWidth: 260, // Optional, the width of a grid item
 	                ignoreInactiveItems: false,
-	                onLayoutChanged: false
+	                onLayoutChanged: false,
+	                direction: 'left'
 	            };
 	            var $tiles = $(this.refs.tileWrap);
-	            imagesLoaded($tiles, function () {
+	
+	            $tiles.imagesLoaded().always(function () {
 	                // Destroy the old handler
 	                if ($tiles.wookmarkInstance) {
 	                    $tiles.wookmarkInstance.clear();
@@ -1101,6 +1161,8 @@
 	                // $handler = $('li', $tiles);
 	                $tiles.wookmark(options);
 	                $tiles.wookmarkInstance.layout(true);
+	            }).progress(function (instance, image) {
+	                $(image.img).attr('height', image.img.height);
 	            });
 	        }
 	    }, {
@@ -1113,11 +1175,71 @@
 	        value: function toggleSpread(ev) {
 	            ev.stopPropagation();
 	            ev.preventDefault();
-	            this.wookmarkLayout();
+	
 	            $(this.refs.spreadMenu).toggleClass(_content2.default.MenuSpreaded);
 	            $(this.refs.leftWrap).toggleClass(_content2.default.leftSpread);
 	            $(this.refs.rightWrap).toggleClass(_content2.default.rightSpread);
+	            $(this.refs.icon_cross).toggleClass(_content2.default.spreadRotate);
+	            this.wookmarkLayout();
 	        }
+	
+	        // 编辑方面的逻辑
+	
+	    }, {
+	        key: 'tileEidtState',
+	        value: function tileEidtState(msg, args) {
+	
+	            if (this.editState) {
+	                return;
+	            };
+	            this.editState = true;
+	            if (args.message === true) {
+	                $(this.refs.tileWrap.children).each(function (i, elt) {
+	                    $(elt).css('animation', 'shaking 0.1s ' + Math.random() + 's infinite ease alternate none');
+	                });
+	            } else {
+	                $(this.refs.tileWrap.children).each(function (i, elt) {
+	                    $(elt).css('animation', '');
+	                });
+	            }
+	            PubSub.publish('tileEditUI', { message: args.message });
+	            this.wookmarkLayout();
+	        }
+	    }, {
+	        key: 'outTileEidt',
+	        value: function outTileEidt(ev) {
+	            ev.stopPropagation();
+	            ev.preventDefault();
+	            if (ev.currentTarget === ev.target) {
+	                PubSub.publish('tileEidtState', { message: false });
+	                this.wookmarkLayout();
+	            }
+	            this.editState = false;
+	
+	            if (this.dropList.length === 0) {
+	                return;
+	            }
+	        }
+	    }, {
+	        key: 'recordDropTile',
+	        value: function recordDropTile(tile, tileid) {
+	            var _this6 = this;
+	
+	            $.ajax({
+	                url: config.url + '?h=home&c=tile&a=dropTile',
+	                data: { tileid: tileid },
+	                dataType: 'JSON'
+	            }).done(function (data) {
+	                if (data.message === 1) {
+	                    PubSub.publish('globalHint', { rawText: 'Sharing', endText: 'Fail to delete' });
+	                } else if (data.message === 0) {
+	                    PubSub.publish('globalHint', { rawText: 'Sharing', endText: 'Drop tile done!' });
+	                    $(tile).remove();
+	                    _this6.wookmarkLayout();
+	                }
+	            });
+	        }
+	
 	        /**
 	         * react的生命周期函数
 	         */
@@ -1125,7 +1247,7 @@
 	    }, {
 	        key: 'componentDidMount',
 	        value: function componentDidMount() {
-	            var _this6 = this;
+	            var _this7 = this;
 	
 	            $(window).on('scroll', this.handlerScroll);
 	            // 订阅订阅tile请求
@@ -1133,6 +1255,7 @@
 	            PubSub.subscribe('initTile', this.initTile);
 	            PubSub.subscribe('toggleWelcome', this.toggleWelcome);
 	            PubSub.subscribe('updateTile', this.updateTile);
+	            PubSub.subscribe('tileEidtState', this.tileEidtState);
 	            this.initTile();
 	
 	            //请求分类信息
@@ -1143,16 +1266,16 @@
 	                    data = data.map(function (elt, indx) {
 	                        return React.createElement(
 	                            'li',
-	                            { key: indx, 'data-categoryid': elt.category_id, onClick: _this6.listClick.bind(_this6) },
+	                            { key: indx, 'data-categoryid': elt.category_id, onClick: _this7.listClick.bind(_this7) },
 	                            elt.category_name
 	                        );
 	                    });
 	                    data.unshift(React.createElement(
 	                        'li',
-	                        { key: Math.random().toString().slice(2), 'data-categoryid': 0, onClick: _this6.listClick.bind(_this6) },
+	                        { key: Math.random().toString().slice(2), 'data-categoryid': 0, onClick: _this7.listClick.bind(_this7) },
 	                        'All'
 	                    ));
-	                    _this6.setState({ typeList: data });
+	                    _this7.setState({ typeList: data });
 	                }
 	            });
 	
@@ -1162,6 +1285,7 @@
 	        key: 'componentDidUpdate',
 	        value: function componentDidUpdate() {
 	            this.wookmarkLayout();
+	            this.outTileEidt = this.outTileEidt.bind(this);
 	        }
 	    }, {
 	        key: 'render',
@@ -1171,13 +1295,13 @@
 	                { className: '' + _content2.default.contentBox, ref: 'content' },
 	                React.createElement(
 	                    'div',
-	                    { className: '' + _content2.default["g-left"], ref: 'leftWrap' },
+	                    { className: '' + _content2.default["g-left"], ref: 'leftWrap', onClick: this.outTileEidt },
 	                    React.createElement(
 	                        'div',
-	                        { className: '' + _content2.default.layoutWrap },
+	                        { className: '' + _content2.default.layoutWrap, onClick: this.outTileEidt },
 	                        React.createElement(
 	                            'ul',
-	                            { ref: 'tileWrap' },
+	                            { ref: 'tileWrap', onClick: this.outTileEidt },
 	                            this.state.tileList
 	                        )
 	                    )
@@ -1188,6 +1312,11 @@
 	                    React.createElement(
 	                        'aside',
 	                        { className: '' + _content2.default.aside },
+	                        React.createElement(
+	                            'h4',
+	                            { className: '' + _content2.default.userHint, onClick: this.backTohome.bind(this) },
+	                            this.state.belong
+	                        ),
 	                        React.createElement(
 	                            'h3',
 	                            null,
@@ -1235,7 +1364,11 @@
 	                        )
 	                    )
 	                ),
-	                React.createElement('span', { ref: 'spreadMenu', className: '' + _content2.default.spreadMenu, onClick: this.toggleSpread.bind(this) })
+	                React.createElement(
+	                    'span',
+	                    { ref: 'spreadMenu', className: '' + _content2.default.spreadMenu, onClick: this.toggleSpread.bind(this) },
+	                    React.createElement('i', { className: 'icon-cross', ref: 'icon_cross' })
+	                )
 	            );
 	        }
 	    }]);
@@ -1291,6 +1424,9 @@
 	
 			_this.requestData = null;
 			_this.thumbTimer = null;
+	
+			_this.tileEditUI = _this.tileEditUI.bind(_this);
+	
 			return _this;
 		}
 		//点赞后的动作
@@ -1373,13 +1509,42 @@
 				});
 			}
 		}, {
+			key: 'tileEditUI',
+			value: function tileEditUI(msg, args) {
+				if (args.message === true) {
+					$(this.refs.editIcon).removeClass(_item2.default.hide);
+					$(this.refs.imgWrap).addClass(_item2.default.editHeight);
+				} else {
+					$(this.refs.editIcon).addClass(_item2.default.hide);
+					$(this.refs.imgWrap).removeClass(_item2.default.editHeight);
+				}
+			}
+		}, {
+			key: 'recordDropTile',
+			value: function recordDropTile(ev) {
+				ev.stopPropagation();
+				ev.preventDefault();
+				console.log(this.props);
+				this.props.handleDrop(this.refs.tile, $(this.refs.tile).data('tileid'));
+			}
+		}, {
+			key: 'componentDidMount',
+			value: function componentDidMount() {
+				PubSub.subscribe('tileEditUI', this.tileEditUI);
+			}
+		}, {
 			key: 'render',
 			value: function render() {
 				var props = this.props.data;
 				return React.createElement(
 					'li',
-					{ className: _item2.default.tileWrap, 'data-tileid': props.tile_id, ref: 'tile' },
-					React.createElement('img', { src: props.tile_cover, width: '200', height: '214' }),
+					{ className: _item2.default.tileWrap + ' ', 'data-tileid': props.tile_id, ref: 'tile' },
+					React.createElement('i', { className: _item2.default.editIcon + ' ' + _item2.default.hide + ' icon-cross', onClick: this.recordDropTile.bind(this), ref: 'editIcon' }),
+					React.createElement(
+						'div',
+						{ ref: 'imgWrap', className: '' + _item2.default.imgWrap },
+						React.createElement('img', { src: props.tile_cover, width: '200', height: '214' })
+					),
 					React.createElement(
 						'div',
 						{ className: '' + _item2.default.postInfo },
@@ -1456,14 +1621,14 @@
 /***/ function(module, exports) {
 
 	// removed by extract-text-webpack-plugin
-	module.exports = {"tileWrap":"tileWrap_2aqlJqjlMx","postInfo":"postInfo_ZXgqpza8Co","basicInfo":"basicInfo_2CKGUkSS3i","rateBar":"rateBar_qF419WA4m8","rate":"rate_hYs_PXMBsJ","author":"author_2yrSM4Yxtl"};
+	module.exports = {"tileWrap":"tileWrap_2aqlJqjlMx","postInfo":"postInfo_ZXgqpza8Co","basicInfo":"basicInfo_2CKGUkSS3i","rateBar":"rateBar_qF419WA4m8","rate":"rate_hYs_PXMBsJ","author":"author_2yrSM4Yxtl","hide":"hide_2n5S-xEgoO","imgWrap":"imgWrap_3MpPiOacCA","editIcon":"editIcon_346U8kREGF","editHeight":"editHeight_1GEAhbfpy3"};
 
 /***/ },
 /* 13 */
 /***/ function(module, exports) {
 
 	// removed by extract-text-webpack-plugin
-	module.exports = {"contentBox":"contentBox_3s92cNA0wt","layoutWrap":"layoutWrap_3lsSYpAvN0","g-left":"g-left_1irHrfbe1e","leftSpread":"leftSpread_EBarCVtHhA","g-right":"g-right_11Go81irgz","rightSpread":"rightSpread_1-TiCHl_lg","aside":"aside_3_7Tv4TGTN","sortElement":"sortElement_3Z9qFB1fgb","typeList":"typeList_1hESDwKzKf","spreadMenu":"spreadMenu_3E_-yAmX4z","MenuSpreaded":"MenuSpreaded_cp-rt1CFqo","notLogin":"notLogin_373DqV1sgo","hide":"hide_cqspzJvttZ","redColor":"redColor_1meIouxnOg"};
+	module.exports = {"contentBox":"contentBox_3s92cNA0wt","layoutWrap":"layoutWrap_3lsSYpAvN0","g-left":"g-left_1irHrfbe1e","leftSpread":"leftSpread_EBarCVtHhA","g-right":"g-right_11Go81irgz","rightSpread":"rightSpread_1-TiCHl_lg","aside":"aside_3_7Tv4TGTN","sortElement":"sortElement_3Z9qFB1fgb","typeList":"typeList_1hESDwKzKf","spreadMenu":"spreadMenu_3E_-yAmX4z","spreadRotate":"spreadRotate_28CIQK2Fy4","MenuSpreaded":"MenuSpreaded_cp-rt1CFqo","notLogin":"notLogin_373DqV1sgo","hide":"hide_cqspzJvttZ","redColor":"redColor_1meIouxnOg"};
 
 /***/ },
 /* 14 */
@@ -3061,6 +3226,16 @@
 	
 				var file = fileList[fileList.length - 1];
 	
+				if (file.type.search(/^image/) == -1) {
+					PubSub.publish('globalHint', { rawText: 'Sharing', endText: 'Invalid image type' });
+					return;
+				}
+	
+				if (file.size >= 2097152) {
+					PubSub.publish('globalHint', { rawText: 'Sharing', endText: 'Image size overflow' });
+					return;
+				}
+	
 				if (!file) {
 					return;
 				}
@@ -3532,6 +3707,10 @@
 	
 	var _userEntry2 = _interopRequireDefault(_userEntry);
 	
+	var _validation = __webpack_require__(24);
+	
+	var _validation2 = _interopRequireDefault(_validation);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -3559,6 +3738,9 @@
 	        _this.showEntryPanel = _this.showEntryPanel.bind(_this);
 	        _this.closePanel = _this.closePanel.bind(_this);
 	        _this.userEntryFadeOut = _this.userEntryFadeOut.bind(_this);
+	
+	        _this.validation = new _validation2.default();
+	
 	        return _this;
 	    }
 	
@@ -3628,16 +3810,94 @@
 	        value: function submit(ev) {
 	            ev.preventDefault();
 	            var form = ev.target;
+	            var self = this;
+	            var $username = $(form.username),
+	                $password = $(form.password),
+	                $cfpassword = $(form.cfpassword);
+	
 	            if (this.state.action === 'login') {
+	
+	                // 开始验证
+	                var msg = this.validation.valiOneByDom('usernameR');
+	                var isBreake = false;
+	                if (msg) {
+	                    $username.val('');
+	                    $username.attr('placeholder', msg);
+	                    $username.addClass(_userEntry2.default.warning);
+	                    isBreake = true;
+	                    rmWarning($username);
+	                }
+	
+	                msg = this.validation.valiOneByDom('passwordR');
+	
+	                if (msg) {
+	                    $password.val('');
+	                    $password.attr('placeholder', msg);
+	                    $password.addClass(_userEntry2.default.warning);
+	                    isBreake = true;
+	                    rmWarning($password);
+	                }
+	
+	                // 如果验证不通过，退出
+	                if (isBreake) {
+	                    return;
+	                }
+	
 	                this.ajaxLogin({
 	                    username: form.username.value,
 	                    password: form.password.value
 	                });
 	            } else {
+	
+	                // 开始验证
+	                var _isBreake = false;
+	                var _msg = this.validation.valiOneByDom('usernameR');
+	
+	                if (_msg) {
+	                    $username.val('');
+	                    $username.addClass(_userEntry2.default.warning);
+	                    _isBreake = true;
+	                    $username.attr('placeholder', _msg);
+	                    rmWarning($username);
+	                }
+	
+	                _msg = this.validation.valiOneByDom('passwordR');
+	
+	                if ($password.val() !== $cfpassword.val()) {
+	                    $cfpassword.val('');
+	                    $cfpassword.addClass(_userEntry2.default.warning);
+	                    $cfpassword.attr('placeholder', _msg);
+	                    rmWarning($cfpassword);
+	                }
+	
+	                if (_msg) {
+	                    $password.val('');
+	                    $password.addClass(_userEntry2.default.warning);
+	                    _isBreake = true;
+	                    $password.attr('placeholder', _msg);
+	                    rmWarning($password);
+	                }
+	
+	                console.log(_isBreake, this.formBreak);
+	
+	                // 如果验证不通过，退出
+	                if (_isBreake) {
+	                    return;
+	                }
+	
 	                this.ajaxRegister({
 	                    username: form.username.value,
 	                    password: form.password.value,
 	                    cfpassword: form.cfpassword.value
+	                });
+	            }
+	
+	            function rmWarning(elt) {
+	                $(elt).one('click', function () {
+	                    var $this = $(this);
+	                    $this.removeClass(_userEntry2.default.warning);
+	                    $this.val('');
+	                    $this.attr('placeholder', $this.data('ph'));
 	                });
 	            }
 	        }
@@ -3654,11 +3914,18 @@
 	                data: data,
 	                dataType: 'json',
 	                success: function success(data) {
-	                    if (data.message === 1) {
-	                        $(_this2.refs.form.reset).click();
+	                    var $name = $(_this2.refs.form.username);
+	
+	                    if (data.message === 0) {
 	                        _this2.registedDone(data);
-	                    } else if (data.message === 0) {
-	                        alert('不对！！！');
+	                        PubSub.publish('globalHint', { rawText: 'Sharing', endText: 'Done! Please login' });
+	                    } else if (data.message === 1) {
+	                        PubSub.publish('globalHint', { rawText: 'Sharing', endText: 'Fail to register' });
+	                    } else if (data.message === 2) {
+	                        $name.addClass(_userEntry2.default.warning);
+	                        $name.attr('placeholder', data.desc);
+	                        PubSub.publish('globalHint', { rawText: 'Sharing', endText: 'User already exists' });
+	                        _this2.rmWarning($name);
 	                    }
 	                }
 	            });
@@ -3688,7 +3955,11 @@
 	                data: data,
 	                dataType: 'json',
 	                success: function success(data) {
-	                    if (data.message === 1) {
+	
+	                    var form = _this3.refs.form;
+	                    var $username = $(form.username);
+	                    var $password = $(form.password);
+	                    if (data.message === 0) {
 	                        //在content里订阅了
 	                        PubSub.publish('initTile');
 	                        cookie.set('user', data.user_id);
@@ -3700,8 +3971,31 @@
 	                            userid: data.user_id,
 	                            avatarUrl: data.user_icon
 	                        });
+	                    } else if (data.message === 1) {
+	
+	                        $username.attr('placeholder', data.desc);
+	                        $username.val('');
+	                        $username.addClass(_userEntry2.default.warning);
+	                        _this3.rmWarning($username);
+	                        PubSub.publish('globalHint', { rawText: 'Sharing', endText: 'User dose not exist' });
+	                    } else if (data.message === 2) {
+	                        $password.attr('placeholder', data.desc);
+	                        $password.val('');
+	                        $password.addClass(_userEntry2.default.warning);
+	                        _this3.rmWarning($password);
+	                        PubSub.publish('globalHint', { rawText: 'Sharing', endText: 'Invalid password' });
 	                    }
 	                }
+	            });
+	        }
+	    }, {
+	        key: 'rmWarning',
+	        value: function rmWarning(elt) {
+	            $(elt).one('click', function () {
+	                var $this = $(this);
+	                $this.removeClass(_userEntry2.default.warning);
+	                $this.val('');
+	                $this.attr('placeholder', $this.data('ph'));
 	            });
 	        }
 	
@@ -3715,6 +4009,18 @@
 	            PubSub.subscribe('showEntryPanel', this.showEntryPanel);
 	            PubSub.subscribe('userEntryFadeOut', this.userEntryFadeOut);
 	            PubSub.subscribe('closeUserEntry', this.closePanel);
+	
+	            var form = this.refs.form;
+	
+	            this.validation.addByDom(form.username, 'usernameR', [{ strategy: 'isEmpty', errorMsg: '用户名不能为空' }, { strategy: 'hasSpace', errorMsg: '不能有空格' }, { strategy: 'isNumberHead', errorMsg: '不能数字开头' }]);
+	
+	            this.validation.addByDom(form.password, 'passwordR', [{ strategy: 'isEmpty', errorMsg: '密码不能为空' }]);
+	
+	            this.validation.addByDom(form.username, 'usernameL', [{ strategy: 'isEmpty', errorMsg: '用户名不能为空' }, { strategy: 'hasSpace', errorMsg: '不能有空格' }
+	            // {strategy: 'isNumberHead', errorMsg:'不能数字开头'}
+	            ]);
+	
+	            this.validation.addByDom(form.password, 'passwordL', [{ strategy: 'isEmpty', errorMsg: '密码不能为空' }, { strategy: 'hasSpace', errorMsg: '不能有空格' }]);
 	        }
 	    }, {
 	        key: 'render',
@@ -3731,7 +4037,7 @@
 	                        React.createElement(
 	                            'h2',
 	                            null,
-	                            '\u90A3\u65F6\u5019\u6CA1\u6709\u4EBA\u5E2E\u52A9\u4ED6\uFF0C\u4ED6\u5C31\u4E00\u4E2A\u4EBA\u5728\u665A\u4E0A\u5199\u4EE3\u7801\uFF0C\u5199\u51FA\u4ED6\u5FC3\u4E2D\u7684\u4E16\u754C\u3002'
+	                            '1982-1983\u5E74\uFF0C\u4ED6\u5C31\u4E00\u4E2A\u4EBA\uFF0C\u5199\u4E86GCC, GDB, Emacs\u7B49\u4E00\u7CFB\u5217\u8F6F\u4EF6'
 	                        )
 	                    ),
 	                    React.createElement(
@@ -3740,9 +4046,9 @@
 	                        React.createElement(
 	                            'form',
 	                            { className: 'form', ref: 'form', action: '#', method: 'post', 'data-action': '{this.state.action}', onSubmit: this.submit.bind(this) },
-	                            React.createElement('input', { className: 'email', type: 'text', name: 'username', placeholder: 'Username', required: '' }),
-	                            React.createElement('input', { className: 'lock', type: 'password', name: 'password', placeholder: 'Password', required: '' }),
-	                            React.createElement('input', { className: '' + _userEntry2.default.hide, type: 'password', name: 'cfpassword', placeholder: 'confirm Password', required: '' }),
+	                            React.createElement('input', { type: 'text', name: 'username', 'data-type': 'text', 'data-ph': 'Username', placeholder: 'Username', required: '' }),
+	                            React.createElement('input', { type: 'password', name: 'password', 'data-type': 'password', 'data-ph': 'password', placeholder: 'Password', required: '' }),
+	                            React.createElement('input', { className: '' + _userEntry2.default.hide, 'data-type': 'password', type: 'password', name: 'cfpassword', placeholder: 'confirm Password', 'data-ph': 'confirm Password', required: '' }),
 	                            React.createElement('input', { name: 'submit', type: 'submit', value: this.state.submitHint }),
 	                            React.createElement('input', { className: _userEntry2.default.hide, name: 'reset', type: 'reset', value: this.state.submitHint })
 	                        ),
@@ -3769,7 +4075,7 @@
 /***/ function(module, exports) {
 
 	// removed by extract-text-webpack-plugin
-	module.exports = {"hide":"hide_2V-M8kB0Oo","fastGoto":"fastGoto_1zPUCksir8","center":"center_2QgOpoe2lr","panelWrap":"panelWrap_15l9SiN1qs","panelFade":"panelFade_1NEb7kJbkV","entryPanel":"entryPanel_2FFrDnm00s","entryHint":"entryHint_2QUzniN0Me","inputInfo":"inputInfo_1WQUxR5bBV","close":"close_2WBqe84tKI"};
+	module.exports = {"hide":"hide_2V-M8kB0Oo","fastGoto":"fastGoto_1zPUCksir8","center":"center_2QgOpoe2lr","panelWrap":"panelWrap_15l9SiN1qs","panelFade":"panelFade_1NEb7kJbkV","entryPanel":"entryPanel_2FFrDnm00s","entryHint":"entryHint_2QUzniN0Me","inputInfo":"inputInfo_1WQUxR5bBV","close":"close_2WBqe84tKI","warning":"warning_3XBZlsJjhg"};
 
 /***/ },
 /* 28 */
@@ -3812,6 +4118,7 @@
 	        _this.userListRefresh = _this.userListRefresh.bind(_this);
 	        _this.toggleUserList = _this.toggleUserList.bind(_this);
 	        _this.updateList = _this.updateList.bind(_this);
+	        _this.menuClick = _this.menuClick.bind(_this);
 	        return _this;
 	    }
 	
@@ -3848,7 +4155,8 @@
 	            ev.preventDefault();
 	            PubSub.publish('userTile', {
 	                watch_user: $(ev.currentTarget).data('userid'),
-	                from_user: cookie.get('user')
+	                from_user: cookie.get('user'),
+	                userName: $(ev.currentTarget).data('username')
 	            });
 	        }
 	        // 请求后的回调
@@ -3864,7 +4172,7 @@
 	                    { key: i },
 	                    React.createElement(
 	                        'a',
-	                        { href: '#', onClick: _this2.watchMine.bind(_this2), 'data-userid': elt.user_id },
+	                        { href: '#', onClick: _this2.watchMine.bind(_this2), 'data-userid': elt.user_id, 'data-username': elt.user_name },
 	                        React.createElement('img', { src: elt.user_icon }),
 	                        React.createElement(
 	                            'span',
@@ -3941,7 +4249,7 @@
 	                { className: _userList2.default.panel + ' userList', ref: 'panel' },
 	                React.createElement(
 	                    'div',
-	                    { className: '' + _userList2.default.menu, onClick: this.menuClick.bind(this) },
+	                    { className: '' + _userList2.default.menu, onClick: this.menuClick },
 	                    React.createElement(
 	                        'div',
 	                        { ref: 'lineWrap' },
@@ -3950,7 +4258,7 @@
 	                        React.createElement('i', { className: _userList2.default.line_3 + ' ' + _userList2.default.reformLine3 })
 	                    )
 	                ),
-	                React.createElement('i', { className: '' + _userList2.default.mask, ref: 'mask', onClick: this.userListRefresh }),
+	                React.createElement('i', { className: '' + _userList2.default.mask, ref: 'mask', onClick: this.menuClick }),
 	                React.createElement(
 	                    'div',
 	                    { className: '' + _userList2.default.listWrap, ref: 'listWrap' },
@@ -3962,7 +4270,7 @@
 	                    React.createElement(
 	                        'h3',
 	                        { className: '' + _userList2.default.listTitle },
-	                        'Users Whome Shared'
+	                        'Users Who Shared'
 	                    ),
 	                    React.createElement(
 	                        'ul',
@@ -4022,7 +4330,7 @@
 	
 	
 	// module
-	exports.push([module.id, "/* css reset */\nhtml,body,h1,h2,h3,h4,h5,h6,div,dl,dt,dd,ul,ol,li,p,blockquote,pre,hr,figure,table,caption,th,td,form,fieldset,legend,input,button,textarea,menu{margin:0;padding:0;}\nheader,footer,section,article,aside,nav,hgroup,address,figure,figcaption,menu,details{display:block;}\ntable{border-collapse:collapse;border-spacing:0;}\ncaption,th{text-align:left;font-weight:normal;}\nhtml,body,fieldset,img,iframe,abbr{border:0;}\ni,cite,em,var,address,dfn{font-style:normal;}\n[hidefocus],summary{outline:0;}\nli{list-style:none;}\nh1,h2,h3,h4,h5,h6,small{font-size:100%;}\nsup,sub{font-size:83%;}\npre,code,kbd,samp{font-family:inherit;}\nq:before,q:after{content:none;}\ntextarea{overflow:auto;resize:none;}\nlabel,summary{cursor:default;}\na,button{cursor:pointer;}\nh1,h2,h3,h4,h5,h6,em,strong,b{font-weight:normal;}\ndel,ins,u,s,a,a:hover{text-decoration:none;}\nbody,textarea,input,button,select,keygen,legend{font:14px/1.14 \"Microsoft YaHei\", arial, simsun; color:#333; outline:0;}\nbody{background:#fff; font-size: 14px;}\nimg{user-select:none;}\na,a:hover{color:#333;}\n/* all will be global */\n\n.f-clear:after{content:\"\";display:block;clear:both;}\n.f-clear{*zoom:1}\n\n.f-inlineBlock{ display: inline-block; *zoom:1; *display: inline; }\n.f-hide{display: none;}\ni.f-refreshing{\n    animation: rotate 2s linear infinite;\n}\n.f-blingbling{ animation: blingbling .6s 6 alternate; }\n\n@keyframes blingbling {\n    from{box-shadow:0 4px 5px rgba(255, 0, 0, 0);}\n    to{box-shadow: 0 0 15px #fd0202;}\n}\n@keyframes rotate{\n    from{transform: rotate(0);}\n    to{transform: rotate(1turn);}\n}\n\n\n@keyframes globalBubble{\n    from{ bottom: 100%; }\n    20%{ bottom: 30%; }\n    50%{ bottom: 30%; }\n    to{ bottom: 100%; }\n}\n\n/* fontface */\n\ni{font-family: 'icomoon';}\n@font-face {\n  font-family: 'icomoon';\n  src:  url('/public/assets/icomoon.eot?687xqw');\n  src:  url('/public/assets/icomoon.eot?687xqw#iefix') format('embedded-opentype'),\n    url('/public/assets/icomoon.ttf?687xqw') format('truetype'),\n    url('/public/assets/icomoon.woff?687xqw') format('woff'),\n    url('/public/assets/icomoon.svg?687xqw#icomoon') format('svg');\n  font-weight: normal;\n  font-style: normal;\n}\n.icon-user:before {\n  content: \"\\E900\";\n}\n.icon-heart1:before {\n  content: \"\\E901\";\n}\n.icon-heart2:before {\n  content: \"\\E902\";\n}\n.icon-marker:before {\n  content: \"\\E903\";\n}\n.icon-link:before {\n  content: \"\\E005\";\n}\n.icon-cross:before {\n  content: \"\\E117\";\n}\n.icon-location:before {\n  content: \"\\E947\";\n}\n.icon-loop2:before {\n  content: \"\\EA2E\";\n}\n.icon-home:before {\n  content: \"\\E904\";\n}\n\n.icon-arrow-down2:before {\n  content: \"\\EA3E\";\n}\n.icon-arrow-up2:before {\n  content: \"\\EA3A\";\n}\n/* end of fontface */\n\n/* unit */\n.u-btn{ cursor: pointer; -webkit-user-select: none;}\n.u-bubbleHint{\n    position: absolute; top: -88%; left: -30px; font-size: 10px; padding: 0 5px; border-radius: 4px; background: #fc8282; box-shadow: 0 0 4px rgba(255, 127, 110, 0.49); text-align: center; color: #fff; font-weight: normal; white-space:nowrap;}\n", ""]);
+	exports.push([module.id, "/* css reset */\nhtml,body,h1,h2,h3,h4,h5,h6,div,dl,dt,dd,ul,ol,li,p,blockquote,pre,hr,figure,table,caption,th,td,form,fieldset,legend,input,button,textarea,menu{margin:0;padding:0;}\nheader,footer,section,article,aside,nav,hgroup,address,figure,figcaption,menu,details{display:block;}\ntable{border-collapse:collapse;border-spacing:0;}\ncaption,th{text-align:left;font-weight:normal;}\nhtml,body,fieldset,img,iframe,abbr{border:0;}\ni,cite,em,var,address,dfn{font-style:normal;}\n[hidefocus],summary{outline:0;}\nli{list-style:none;}\nh1,h2,h3,h4,h5,h6,small{font-size:100%;}\nsup,sub{font-size:83%;}\npre,code,kbd,samp{font-family:inherit;}\nq:before,q:after{content:none;}\ntextarea{overflow:auto;resize:none;}\nlabel,summary{cursor:default;}\na,button{cursor:pointer;}\nh1,h2,h3,h4,h5,h6,em,strong,b{font-weight:normal;}\ndel,ins,u,s,a,a:hover{text-decoration:none;}\nbody,textarea,input,button,select,keygen,legend{font:14px/1.14 \"Microsoft YaHei\", arial, simsun; color:#333; outline:0;}\nbody{background:#fff; font-size: 14px;}\nimg{user-select:none;}\na,a:hover{color:#333;}\n/* all will be global */\n\n.f-clear:after{content:\"\";display:block;clear:both;}\n.f-clear{*zoom:1}\n\n.f-inlineBlock{ display: inline-block; *zoom:1; *display: inline; }\n.f-hide{display: none;}\ni.f-refreshing{\n    animation: rotate 2s linear infinite;\n}\n.f-blingbling{ animation: blingbling .6s 6 alternate; }\n\n@keyframes blingbling {\n    from{box-shadow:0 4px 5px rgba(255, 0, 0, 0);}\n    to{box-shadow: 0 0 15px #fd0202;}\n}\n@keyframes rotate{\n    from{transform: rotate(0);}\n    to{transform: rotate(1turn);}\n}\n\n\n@keyframes globalBubble{\n    from{ bottom: 100%; }\n    20%{ bottom: 30%; }\n    50%{ bottom: 30%; }\n    to{ bottom: 100%; }\n}\n\n.f-shaking{\n    animation: shaking 0.1s 0s infinite ease alternate none ;\n}\n@keyframes shaking{\n    0%{\n        transform:translateY(-0.5px) translateX(0.5px) rotateZ(-0.5deg);\n    }\n    100%{\n        transform:translateY(0.5px) translateX(-0.5px) rotateZ(0.5deg);\n    }\n}\n\n\n/* fontface */\n\ni{font-family: 'icomoon';}\n@font-face {\n  font-family: 'icomoon';\n  src:  url('/public/assets/icomoon.eot?687xqw');\n  src:  url('/public/assets/icomoon.eot?687xqw#iefix') format('embedded-opentype'),\n    url('/public/assets/icomoon.ttf?687xqw') format('truetype'),\n    url('/public/assets/icomoon.woff?687xqw') format('woff'),\n    url('/public/assets/icomoon.svg?687xqw#icomoon') format('svg');\n  font-weight: normal;\n  font-style: normal;\n}\n.icon-user:before {\n  content: \"\\E900\";\n}\n.icon-heart1:before {\n  content: \"\\E901\";\n}\n.icon-heart2:before {\n  content: \"\\E902\";\n}\n.icon-marker:before {\n  content: \"\\E903\";\n}\n.icon-link:before {\n  content: \"\\E005\";\n}\n.icon-cross:before {\n  content: \"\\E117\";\n}\n.icon-location:before {\n  content: \"\\E947\";\n}\n.icon-loop2:before {\n  content: \"\\EA2E\";\n}\n.icon-home:before {\n  content: \"\\E904\";\n}\n\n.icon-arrow-down2:before {\n  content: \"\\EA3E\";\n}\n.icon-arrow-up2:before {\n  content: \"\\EA3A\";\n}\n/* end of fontface */\n\n/* unit */\n.u-btn{ cursor: pointer; -webkit-user-select: none;}\n.u-bubbleHint{\n    position: absolute; top: -88%; left: -30px; font-size: 10px; padding: 0 5px; border-radius: 4px; background: #fc8282; box-shadow: 0 0 4px rgba(255, 127, 110, 0.49); text-align: center; color: #fff; font-weight: normal; white-space:nowrap;}\n", ""]);
 	
 	// exports
 

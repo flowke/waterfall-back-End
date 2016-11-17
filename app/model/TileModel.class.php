@@ -35,4 +35,9 @@ class TileModel extends Model{
         return $this->dbClass->getAll($sql,$data);
     }
 
+    public function dropTile($data){
+        $sql = "DELETE FROM {$this->table} WHERE tile_id = ?";
+        return $this->delete($sql, $data);
+    }
+
 }
